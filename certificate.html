@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="robots" content="noindex, nofollow, noarchive"/>
+  
   <title>Editor de Certificados</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
@@ -183,12 +185,10 @@ function copyGenLink(){
   setTimeout(()=> btn.textContent = 'Copiar Enlace Público', 2000);
 }
 
-// Lógica de impresión: Abre el certificado limpio en otra pestaña y ejecuta el driver nativo de PDF
 function printPDF() {
   if(!currentGeneratedUrl) return;
   const printWindow = window.open(currentGeneratedUrl, '_blank');
   printWindow.addEventListener('load', function() {
-    // Un leve retraso para dar tiempo a que cargue la tipografía externa y renderice imágenes
     setTimeout(() => {
       printWindow.print();
     }, 500);
