@@ -39,17 +39,26 @@
 
     /* HEADER ESTILO FREECODECAMP (Franja oscura de borde a borde interno) */
 /* HEADER ESTILO FREECODECAMP (Franja oscura de borde a borde interno) */
-    .cert-header { 
-      position: relative; 
-      z-index: 2; 
-      background: var(--header-dark); 
-      margin: 20px 20px 0 20px;
-      padding: 2.5% 4%; 
-      display: flex; 
-      align-items: center; 
-      justify-content: center; 
-    }
-    #cert-logo-area { display: flex; align-items: center; justify-content: center; width: 100%; max-width: 280px; height: clamp(35px, 6vw, 50px); }
+.cert-header { 
+  position: relative; 
+  z-index: 2; 
+  background: var(--header-dark); 
+  margin: 20px 20px 0 20px;
+  padding: 0; /* Quitamos el padding porcentual */
+  height: 110px; /* ← PARAMETRO A EDITAR: Forzamos a la franja oscura a medir 110px de alto */
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+}
+
+#cert-logo-area { 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  width: 100%; 
+  max-width: 550px; /* ← PARAMETRO A EDITAR: Le damos un ancho máximo gigante */
+  height: 90px;    /* ← PARAMETRO A EDITAR: Forzamos al logo a medir 90px de alto */
+}
     #cert-logo-area img { display: block; max-width: 100%; max-height: 100%; object-fit: contain; object-position: center; }
     .logo-text { color: #ffffff; font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: clamp(1.4rem, 3.8vw, 2.4rem); letter-spacing: .02em; }
 
