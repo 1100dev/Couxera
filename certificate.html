@@ -20,7 +20,6 @@
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
     .checkbox-group { display: flex; align-items: center; gap: .5rem; margin-top: .5rem; }
     
-    /* CORRECCIÓN DE CAPAS PARA CLICS SEGUROS */
     .file-input-wrapper { position: relative; margin-top: .2rem; height: 38px; cursor: pointer; }
     .file-input-wrapper input[type="file"] { 
       position: absolute; inset: 0; width: 100%; height: 100%; 
@@ -96,6 +95,10 @@
     </div>
   </div>
 
+  <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 0.8rem; border-radius: 4px; font-size: 0.75rem; color: rgba(255,255,255,0.5); margin-bottom: 1rem; line-height: 1.4;">
+    ⚠️ <strong>Importante:</strong> Los archivos que selecciones aquí deben tener el **mismo nombre exacto** que los archivos que subiste a tu carpeta <code>images/</code> en GitHub.
+  </div>
+
   <div class="row">
     <div class="form-group">
       <label>Imagen del Logo (Superior)</label>
@@ -145,9 +148,9 @@
 <script>
 function $(id){ return document.getElementById(id); }
 
+// Aquí guardaremos las rutas relativas en vez de código Base64 plano
 let _imgs = { logo: '', sig: '', left: '', right: '' };
 
-// FUNCIÓN BLINDADA PARA DETECTAR ARCHIVOS CORRECTAMENTE
 function bindFile(inputId, labelId, key) {
   $(inputId).addEventListener('change', function(e){
     const file = e.target.files[0];
@@ -157,63 +160,15 @@ function bindFile(inputId, labelId, key) {
     $(labelId).style.borderStyle = "solid";
     $(labelId).style.borderColor = "rgba(255,255,255,0.6)";
 
-    const reader = new FileReader();
-    reader.onload = function(evt) {
-      _imgs[key] = evt.target.result;
-    };
-    reader.readAsDataURL(file);
+    // NUEVA LÓGICA: En lugar de convertir a base64, creamos la ruta a la carpeta images/
+    _imgs[key] = "images/" + file.name;
   });
 }
 
-// Activar observadores
 bindFile('file-logo', 'lbl-logo', 'logo');
 bindFile('file-sig', 'lbl-sig', 'sig');
 bindFile('file-left', 'lbl-left', 'left');
 bindFile('file-right', 'lbl-right', 'right');
 
 function generateLink(){
-  const verifyId = $('ed-verify').value.trim() || 'CERT-PREVIEW';
-  
-  const data = {
-    name:       $('ed-name').value,
-    course:     $('ed-course').value,
-    subtitle:   $('ed-subtitle').value,
-    hours:      $('ed-hours').value,
-    signame:    $('ed-signame').value,
-    sigrole:    $('ed-sigrole').value,
-    verify:     verifyId,
-    logoText:   $('ed-logotext').value,
-    logoInvert: $('ed-logo-invert').checked,
-    logo:       _imgs.logo,
-    sig:        _imgs.sig,
-    left:       _imgs.left,
-    right:      _imgs.right,
-  };
-
-  localStorage.setItem('cert_' + verifyId, JSON.stringify(data));
-  localStorage.setItem('cert_payload', JSON.stringify(data));
-
-  const origin = window.location.origin;
-  let path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
-  if(!path.endsWith('/')) path += '/';
-  
-  const url = origin + path + 'view.html#' + verifyId;
-  
-  $('link-output').value = url;
-  $('link-open').href = url;
-  $('link-result').style.display = 'block';
-  $('link-output').select();
-  $('link-result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-}
-
-function copyGenLink(){
-  const input = $('link-output');
-  input.select();
-  navigator.clipboard.writeText(input.value).catch(()=>{});
-  const btn = input.nextElementSibling;
-  btn.textContent = '✓ Copiado';
-  setTimeout(()=> btn.textContent = 'Copiar Enlace', 2000);
-}
-</script>
-</body>
-</html>
+  const verifyId = $('ed-verify').value
