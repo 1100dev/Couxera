@@ -1,8 +1,4 @@
 {
   "cleanUrls": true,
-  "routes": [
-    { "src": "/", "dest": "/index.html" },
-    { "src": "/certificate", "dest": "/certificate.html" },
-    { "src": "/view", "dest": "/view.html" }
-  ]
+  "trailingSlash": false
 }
