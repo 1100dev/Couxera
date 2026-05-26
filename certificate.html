@@ -20,9 +20,18 @@
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
     .checkbox-group { display: flex; align-items: center; gap: .5rem; margin-top: .5rem; }
     
-    .file-input-wrapper { position: relative; margin-top: .2rem; }
-    .file-input-wrapper input[type="file"] { position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; z-index: 5; }
-    .file-btn { background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2); padding: .6rem; border-radius: 4px; text-align: center; font-size: .8rem; color: rgba(255,255,255,0.8); display: block; position: relative; z-index: 1; pointer-events: none; }
+    /* CORRECCIÓN DE CAPAS PARA CLICS SEGUROS */
+    .file-input-wrapper { position: relative; margin-top: .2rem; height: 38px; cursor: pointer; }
+    .file-input-wrapper input[type="file"] { 
+      position: absolute; inset: 0; width: 100%; height: 100%; 
+      opacity: 0; cursor: pointer; z-index: 10; 
+    }
+    .file-btn { 
+      background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2); 
+      padding: .6rem; border-radius: 4px; text-align: center; font-size: .8rem; 
+      color: rgba(255,255,255,0.8); display: block; position: absolute; inset: 0; 
+      z-index: 1; pointer-events: none; line-height: 1.5;
+    }
     .file-input-wrapper:hover .file-btn { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.4); }
     
     .btn-submit { background: #fff; color: #000; font-weight: 600; text-transform: uppercase; font-size: .85rem; letter-spacing: .1em; padding: .8rem; border: none; border-radius: 4px; margin-top: 1.5rem; cursor: pointer; width: 100%; transition: opacity .2s; }
@@ -91,15 +100,15 @@
     <div class="form-group">
       <label>Imagen del Logo (Superior)</label>
       <div class="file-input-wrapper">
-        <span class="file-btn" id="lbl-logo">Seleccionar archivo...</span>
         <input type="file" id="file-logo" accept="image/*"/>
+        <span class="file-btn" id="lbl-logo">Seleccionar archivo...</span>
       </div>
     </div>
     <div class="form-group">
       <label>Firma Digitalizada (Centro)</label>
       <div class="file-input-wrapper">
-        <span class="file-btn" id="lbl-sig">Seleccionar archivo...</span>
         <input type="file" id="file-sig" accept="image/*"/>
+        <span class="file-btn" id="lbl-sig">Seleccionar archivo...</span>
       </div>
     </div>
   </div>
@@ -108,15 +117,15 @@
     <div class="form-group">
       <label>Código QR (Inferior Izquierdo)</label>
       <div class="file-input-wrapper">
-        <span class="file-btn" id="lbl-left">Seleccionar QR...</span>
         <input type="file" id="file-left" accept="image/*"/>
+        <span class="file-btn" id="lbl-left">Seleccionar QR...</span>
       </div>
     </div>
     <div class="form-group">
       <label>Sello / Insignia Extra (Opcional)</label>
       <div class="file-input-wrapper">
-        <span class="file-btn" id="lbl-right">Seleccionar Sello...</span>
         <input type="file" id="file-right" accept="image/*"/>
+        <span class="file-btn" id="lbl-right">Seleccionar Sello...</span>
       </div>
     </div>
   </div>
@@ -138,12 +147,16 @@ function $(id){ return document.getElementById(id); }
 
 let _imgs = { logo: '', sig: '', left: '', right: '' };
 
-// FUNCIÓN PARA ENLAZAR LA SUBIDA DE ARCHIVOS Y CAMBIAR LOS BOTONES DE INTERFAZ
+// FUNCIÓN BLINDADA PARA DETECTAR ARCHIVOS CORRECTAMENTE
 function bindFile(inputId, labelId, key) {
   $(inputId).addEventListener('change', function(e){
     const file = e.target.files[0];
     if(!file) return;
+    
     $(labelId).textContent = "📁 " + file.name;
+    $(labelId).style.borderStyle = "solid";
+    $(labelId).style.borderColor = "rgba(255,255,255,0.6)";
+
     const reader = new FileReader();
     reader.onload = function(evt) {
       _imgs[key] = evt.target.result;
@@ -152,7 +165,7 @@ function bindFile(inputId, labelId, key) {
   });
 }
 
-// Activar los escuchas para cada input
+// Activar observadores
 bindFile('file-logo', 'lbl-logo', 'logo');
 bindFile('file-sig', 'lbl-sig', 'sig');
 bindFile('file-left', 'lbl-left', 'left');
@@ -178,4 +191,29 @@ function generateLink(){
   };
 
   localStorage.setItem('cert_' + verifyId, JSON.stringify(data));
-  localStorage.setItem('cert_payload
+  localStorage.setItem('cert_payload', JSON.stringify(data));
+
+  const origin = window.location.origin;
+  let path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+  if(!path.endsWith('/')) path += '/';
+  
+  const url = origin + path + 'view.html#' + verifyId;
+  
+  $('link-output').value = url;
+  $('link-open').href = url;
+  $('link-result').style.display = 'block';
+  $('link-output').select();
+  $('link-result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function copyGenLink(){
+  const input = $('link-output');
+  input.select();
+  navigator.clipboard.writeText(input.value).catch(()=>{});
+  const btn = input.nextElementSibling;
+  btn.textContent = '✓ Copiado';
+  setTimeout(()=> btn.textContent = 'Copiar Enlace', 2000);
+}
+</script>
+</body>
+</html>
