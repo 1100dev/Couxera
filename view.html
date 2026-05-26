@@ -65,7 +65,7 @@
 
     .cert-header { position: relative; z-index: 2; padding: 4% 4% 0; display: flex; align-items: center; justify-content: center; min-height: 10%; }
     #cert-logo-area { display: flex; align-items: center; justify-content: center; width: clamp(140px, 25vw, 220px); height: clamp(40px, 7vw, 60px); }
-    #cert-logo-area img { display: block; width: 100%; height: 100%; object-fit: contain; object-position: center; }
+    #cert-logo-area img { display: block; max-width: 100%; max-height: 100%; object-fit: contain; object-position: center; }
     .logo-text { color: var(--dark); font-family: 'Bebas Neue', sans-serif; font-size: clamp(1.3rem, 3.5vw, 2.2rem); letter-spacing: .06em; }
 
     .cert-body { position: relative; z-index: 2; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 2% 6% 1%; text-align: center; }
@@ -80,6 +80,7 @@
     .cert-signature-container { display: flex; flex-direction: column; align-items: center; justify-content: center; width: 100%; max-width: 320px; margin-top: 0.5%; }
     #cert-sig-img-wrap { height: clamp(55px, 9vw, 75px); width: 100%; display: flex; align-items: center; justify-content: center; overflow: hidden; margin-bottom: 0.4rem; }
     #cert-sig-img-wrap img { max-height: 100%; max-width: 100%; object-fit: contain; mix-blend-mode: multiply; }
+    #cert-sig-img-wrap img[src=""], #cert-sig-img-wrap img:not([src]) { display: none !important; }
     
     .cert-sig-line { width: 100%; height: 1px; background: rgba(13,19,33,0.25); margin-bottom: 0.5rem; }
     .cert-sig-name { font-family: 'DM Serif Display', serif; font-size: clamp(1rem, 2.2vw, 1.5rem); color: var(--dark); font-weight: 700; line-height: 1.2; }
@@ -88,10 +89,12 @@
     .cert-footer { position: relative; z-index: 2; display: flex; align-items: center; justify-content: space-between; padding: 0 5% 4%; }
     .cert-left-img { width: clamp(50px, 9vw, 75px); aspect-ratio: 1; flex-shrink: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
     .cert-left-img img { width: 100%; height: 100%; object-fit: contain; display: block; }
+    .cert-left-img img[src=""], .cert-left-img img:not([src]) { display: none !important; }
     
     .cert-verify { text-align: center; font-size: clamp(.38rem, .8vw, .55rem); color: rgba(90,90,106,0.5); letter-spacing: 0.02em; line-height: 1.4; flex: 1; padding: 0 2rem; }
     .cert-right-img { width: clamp(45px, 8vw, 65px); aspect-ratio: 1; flex-shrink: 0; display: flex; align-items: center; justify-content: center; overflow: hidden; }
     .cert-right-img img { width: 100%; height: 100%; object-fit: contain; display: block; }
+    .cert-right-img img[src=""], .cert-right-img img:not([src]) { display: none !important; }
     
     .badge-star-ui { width: 100%; height: 100%; border-radius: 50%; border: 1.5px solid var(--dark); display: flex; align-items: center; justify-content: center; position: relative; }
     .badge-star-ui svg { width: 42%; fill: none; stroke: var(--dark); stroke-width: 2; }
@@ -200,15 +203,91 @@
 <script>
 function $(id){ return document.getElementById(id); }
 
-// SISTEMA REPARADO DE LECTURA ASÍNCRONA LOCAL / PÚBLICA
 function loadFromSource(){
   const hashId = location.hash.slice(1).trim();
   if (!hashId) return null;
 
-  // 1. Buscar correspondencia exacta por ID del certificado (ej. cert_CERT-PREVIEW)
   const localData = localStorage.getItem('cert_' + hashId);
-  if (localData) {
-    return JSON.parse(localData);
+  if (localData) return JSON.parse(localData);
+
+  const fallbackData = localStorage.getItem('cert_payload');
+  if (fallbackData) return JSON.parse(fallbackData);
+
+  return null;
+}
+
+function renderCert(data){
+  $('c-name').textContent       = data.name     || '';
+  $('c-course').textContent   = data.course   || '';
+  $('c-subtitle').textContent = data.subtitle || '';
+  $('c-hours').textContent    = data.hours    || '';
+  $('c-verify-id').textContent = data.verify   || 'N/A';
+  $('c-signame').textContent  = data.signame  || '';
+  $('c-sigrole').textContent  = data.sigrole  || '';
+  
+  $('c-verify-url').textContent = window.location.origin + window.location.pathname + '#' + (data.verify || 'CERT-PREVIEW');
+  
+  document.title = (data.name || 'Certificado') + ' — Certificado';
+  $('page-title').textContent = document.title;
+
+  // Renderizar área del Logo Superior
+  if(data.logo && data.logo.trim() !== ""){
+    $('cert-logo-area').innerHTML = `<img src="${data.logo}" alt="Logo" style="filter:${data.logoInvert?'brightness(0)':'none'};" onerror="this.style.display='none'"/>`;
+  } else if(data.logoText){
+    $('cert-logo-area').innerHTML = `<span class="logo-text">${data.logoText}</span>`;
+  } else {
+    $('cert-logo-area').innerHTML = `<span class="logo-text">CERTIFICATE</span>`;
   }
 
-  // 2. Si falla, intentar parsear el payload gen
+  // Renderizar Firma Central
+  if(data.sig && data.sig.trim() !== ""){
+    $('cert-sig-img-wrap').innerHTML = `<img src="${data.sig}" alt="Firma" onerror="this.parentNode.innerHTML='<span class=sig-fallback>Digital Signature</span>'"/>`;
+  } else {
+    $('cert-sig-img-wrap').innerHTML = `<span style="font-size:0.65rem; color:rgba(0,0,0,0.25); letter-spacing:0.1em; text-transform:uppercase;">Digital Signature</span>`;
+  }
+
+  // Renderizar QR Izquierdo
+  if(data.left && data.left.trim() !== ""){
+    $('cert-left-slot').innerHTML = `<img src="${data.left}" alt="QR" onerror="this.style.display='none'"/>`;
+  } else {
+    $('cert-left-slot').innerHTML = `<div style="width:100%; height:100%; border:1px dashed rgba(0,0,0,0.1); display:flex; align-items:center; justify-content:center; font-size:0.5rem; color:var(--muted);">QR</div>`;
+  }
+
+  // Renderizar Insignia Derecha Extra si existe
+  if(data.right && data.right.trim() !== ""){
+    $('cert-right-slot').innerHTML = `<img src="${data.right}" alt="Sello" onerror="this.style.display='none'"/>`;
+  }
+}
+
+function copyLink(){
+  const input = $('link-input');
+  input.select();
+  navigator.clipboard.writeText(input.value).catch(()=>{});
+  const btn = input.nextElementSibling;
+  btn.textContent = '✓ Copiado';
+  setTimeout(()=> btn.textContent = 'Copiar', 2000);
+}
+
+function closeLinkBox(){
+  $('link-box').classList.remove('visible');
+  $('link-notice').classList.remove('visible');
+}
+
+const certData = loadFromSource();
+
+if(certData){
+  renderCert(certData);
+  $('link-input').value = window.location.origin + window.location.pathname + '#' + (certData.verify || 'CERT-PREVIEW');
+  $('link-box').classList.add('visible');
+  $('link-notice').classList.add('visible');
+} else {
+  document.querySelector('.cert-wrap').innerHTML =
+    `<div class="empty-state">
+      ⚠️ No se encontraron datos válidos para este certificado.<br>
+      <a href="certificate.html">← Abrir el Editor de Certificados</a>
+    </div>`;
+  $('topbar').style.display = 'none';
+}
+</script>
+</body>
+</html>
