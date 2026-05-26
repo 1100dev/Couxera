@@ -96,7 +96,8 @@
     .badge-star-ui { width: 100%; height: 100%; border-radius: 50%; border: 1.5px solid var(--dark); display: flex; align-items: center; justify-content: center; position: relative; }
     .badge-star-ui svg { width: 42%; fill: none; stroke: var(--dark); stroke-width: 2; }
 
-    .empty-state { position: relative; z-index: 3; text-align: center; color: rgba(255,255,255,0.2); font-size: .8rem; margin-top: 3rem; letter-spacing: .06em; line-height: 2; }
+    .empty-state { position: relative; z-index: 3; text-align: center; color: rgba(255,255,255,0.4); font-size: .9rem; margin-top: 4rem; letter-spacing: .06em; line-height: 2; }
+    .empty-state a { color: #fff; text-decoration: underline; margin-top: 10px; display: inline-block; }
 
     @media (max-width: 650px) {
       .cert { aspect-ratio: unset; min-height: 600px; padding-top: 1rem; }
@@ -132,10 +133,10 @@
 </div>
 <div class="vignette"></div>
 
-<div class="topbar">
+<div class="topbar" id="topbar">
   <span class="topbar-label">Vista del Certificado</span>
   <div class="btn-group">
-    <button class="btn btn-outline" onclick="window.history.back()">← Volver a editar</button>
+    <a class="btn btn-outline" href="certificate.html">← Volver a editar</a>
     <button class="btn btn-primary" onclick="window.print()">🖨 Imprimir / PDF</button>
   </div>
 </div>
@@ -151,3 +152,63 @@
 
 <div class="cert-wrap">
   <div class="cert" id="certificate">
+    <img src="images/fondo.svg" class="cert-bg-image" alt="Fondo"/>
+    <div class="cert-frame"></div>
+
+    <div class="cert-header">
+      <div id="cert-logo-area"></div>
+    </div>
+
+    <div class="cert-body">
+      <p class="cert-name" id="c-name"></p>
+      <p class="cert-completed">successfully completed the</p>
+      <p class="cert-course" id="c-course"></p>
+      <p class="cert-subtitle" id="c-subtitle"></p>
+      
+      <div class="cert-meta-block">
+        <div><span class="meta-label">Duration:</span> <span id="c-hours"></span></div>
+        <div><span class="meta-label">Certification ID:</span> <span id="c-verify-id"></span></div>
+      </div>
+
+      <div class="cert-signature-container">
+        <div id="cert-sig-img-wrap"></div>
+        <div class="cert-sig-line"></div>
+        <p class="cert-sig-name" id="c-signame"></p>
+        <p class="cert-sig-role" id="c-sigrole"></p>
+      </div>
+    </div>
+
+    <div class="cert-footer">
+      <div class="cert-left-img" id="cert-left-slot"></div>
+      
+      <p class="cert-verify">
+        Verify this certification at:<br>
+        <span id="c-verify-url"></span>
+      </p>
+      
+      <div class="cert-right-img" id="cert-right-slot">
+        <div class="badge-star-ui">
+          <svg viewBox="0 0 24 24">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function $(id){ return document.getElementById(id); }
+
+// SISTEMA REPARADO DE LECTURA ASÍNCRONA LOCAL / PÚBLICA
+function loadFromSource(){
+  const hashId = location.hash.slice(1).trim();
+  if (!hashId) return null;
+
+  // 1. Buscar correspondencia exacta por ID del certificado (ej. cert_CERT-PREVIEW)
+  const localData = localStorage.getItem('cert_' + hashId);
+  if (localData) {
+    return JSON.parse(localData);
+  }
+
+  // 2. Si falla, intentar parsear el payload gen
