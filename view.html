@@ -38,6 +38,7 @@
     .cert-frame::before { content:''; position: absolute; inset: 4px; border: 1.5px solid var(--header-dark); }
 
     /* HEADER ESTILO FREECODECAMP (Franja oscura de borde a borde interno) */
+/* HEADER ESTILO FREECODECAMP (Franja oscura de borde a borde interno) */
     .cert-header { 
       position: relative; 
       z-index: 2; 
@@ -45,24 +46,11 @@
       margin: 20px 20px 0 20px;
       padding: 2.5% 4%; 
       display: flex; 
-      align-items: left; 
-      justify-content: left; 
+      align-items: center; 
+      justify-content: center; 
     }
-#cert-logo-area { 
-  display: flex; 
-  align-items: left; 
-  justify-content: left; 
-  width: 100%; 
-  max-width: 330px; /* Subió de 280px a 400px para dar más espacio horizontal */
-  height: clamp(40px, 9vw, 60px); /* Subió de 35px-50px a 50px-75px para darle más altura */
-}
-#cert-logo-area img { 
-  display: block; 
-  max-width: 100%; 
-  max-height: 100%; 
-  object-fit: contain; 
-  object-position: center; 
-}
+    #cert-logo-area { display: flex; align-items: center; justify-content: center; width: 100%; max-width: 280px; height: clamp(35px, 6vw, 50px); }
+    #cert-logo-area img { display: block; max-width: 100%; max-height: 100%; object-fit: contain; object-position: center; }
     .logo-text { color: #ffffff; font-family: 'DM Sans', sans-serif; font-weight: 400; font-size: clamp(1.4rem, 3.8vw, 2.4rem); letter-spacing: .02em; }
 
     /* CUERPO DEL CERTIFICADO */
