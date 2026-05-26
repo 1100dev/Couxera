@@ -14,24 +14,16 @@
     
     .form-group { margin-bottom: 1.2rem; display: flex; flex-direction: column; gap: .4rem; }
     label { font-size: .8rem; color: rgba(255,255,255,0.6); font-weight: 500; text-transform: uppercase; letter-spacing: .05em; }
-    input[type="text"], textarea { background: #1a1a1a; border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; padding: .6rem .8rem; color: #fff; font-family: inherit; font-size: .9rem; outline: none; transition: border .2s; }
-    input[type="text"]:focus, textarea:focus { border-color: #fff; }
+    
+    input[type="text"], textarea, select { 
+      background: #1a1a1a; border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; 
+      padding: .6rem .8rem; color: #fff; font-family: inherit; font-size: .9rem; outline: none; transition: border .2s; 
+    }
+    input[type="text"]:focus, textarea:focus, select:focus { border-color: #fff; }
+    select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='white'><polygon points='0,3 10,3 5,8'/></svg>"); background-repeat: no-repeat; background-position: right .8rem center; padding-right: 2rem; }
     
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
     .checkbox-group { display: flex; align-items: center; gap: .5rem; margin-top: .5rem; }
-    
-    .file-input-wrapper { position: relative; margin-top: .2rem; height: 38px; cursor: pointer; }
-    .file-input-wrapper input[type="file"] { 
-      position: absolute; inset: 0; width: 100%; height: 100%; 
-      opacity: 0; cursor: pointer; z-index: 10; 
-    }
-    .file-btn { 
-      background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2); 
-      padding: .6rem; border-radius: 4px; text-align: center; font-size: .8rem; 
-      color: rgba(255,255,255,0.8); display: block; position: absolute; inset: 0; 
-      z-index: 1; pointer-events: none; line-height: 1.5;
-    }
-    .file-input-wrapper:hover .file-btn { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.4); }
     
     .btn-submit { background: #fff; color: #000; font-weight: 600; text-transform: uppercase; font-size: .85rem; letter-spacing: .1em; padding: .8rem; border: none; border-radius: 4px; margin-top: 1.5rem; cursor: pointer; width: 100%; transition: opacity .2s; }
     .btn-submit:hover { opacity: .9; }
@@ -87,7 +79,7 @@
   </div>
 
   <div class="form-group">
-    <label>Texto alternativo del Logo (Si no subes imagen)</label>
+    <label>Texto alternativo del Logo (Si no seleccionas imagen)</label>
     <input type="text" id="ed-logotext" placeholder="Ej. COURSERA"/>
     <div class="checkbox-group">
       <input type="checkbox" id="ed-logo-invert"/>
@@ -95,41 +87,41 @@
     </div>
   </div>
 
-  <div style="background: rgba(255,255,255,0.02); border: 1px solid rgba(255,255,255,0.05); padding: 0.8rem; border-radius: 4px; font-size: 0.75rem; color: rgba(255,255,255,0.5); margin-bottom: 1rem; line-height: 1.4;">
-    ⚠️ <strong>Importante:</strong> Los archivos que selecciones aquí deben tener el **mismo nombre exacto** que los archivos que subiste a tu carpeta <code>images/</code> en GitHub.
-  </div>
-
   <div class="row">
     <div class="form-group">
       <label>Imagen del Logo (Superior)</label>
-      <div class="file-input-wrapper">
-        <input type="file" id="file-logo" accept="image/*"/>
-        <span class="file-btn" id="lbl-logo">Seleccionar archivo...</span>
-      </div>
+      <select id="sel-logo">
+        <option value="">-- Sin imagen / Usar Texto --</option>
+        <option value="images/logo.png">logo.png</option>
+        <option value="images/logo-dark.png">logo-dark.png</option>
+      </select>
     </div>
     <div class="form-group">
       <label>Firma Digitalizada (Centro)</label>
-      <div class="file-input-wrapper">
-        <input type="file" id="file-sig" accept="image/*"/>
-        <span class="file-btn" id="lbl-sig">Seleccionar archivo...</span>
-      </div>
+      <select id="sel-sig">
+        <option value="">-- Sin firma por defecto --</option>
+        <option value="images/firma.png">firma.png</option>
+        <option value="images/firma-2.png">firma-2.png</option>
+      </select>
     </div>
   </div>
 
   <div class="row">
     <div class="form-group">
       <label>Código QR (Inferior Izquierdo)</label>
-      <div class="file-input-wrapper">
-        <input type="file" id="file-left" accept="image/*"/>
-        <span class="file-btn" id="lbl-left">Seleccionar QR...</span>
-      </div>
+      <select id="sel-left">
+        <option value="">-- Sin QR --</option>
+        <option value="images/qr.png">qr.png</option>
+        <option value="images/qr-validacion.png">qr-validacion.png</option>
+      </select>
     </div>
     <div class="form-group">
       <label>Sello / Insignia Extra (Opcional)</label>
-      <div class="file-input-wrapper">
-        <input type="file" id="file-right" accept="image/*"/>
-        <span class="file-btn" id="lbl-right">Seleccionar Sello...</span>
-      </div>
+      <select id="sel-right">
+        <option value="">-- Ninguno --</option>
+        <option value="images/sello.png">sello.png</option>
+        <option value="images/badge.png">badge.png</option>
+      </select>
     </div>
   </div>
 
@@ -148,27 +140,50 @@
 <script>
 function $(id){ return document.getElementById(id); }
 
-// Aquí guardaremos las rutas relativas en vez de código Base64 plano
-let _imgs = { logo: '', sig: '', left: '', right: '' };
+function generateLink(){
+  const verifyId = $('ed-verify').value.trim() || 'CERT-PREVIEW';
+  
+  // Tomamos directamente los values de los selects con las rutas preestablecidas
+  const data = {
+    name:       $('ed-name').value,
+    course:     $('ed-course').value,
+    subtitle:   $('ed-subtitle').value,
+    hours:      $('ed-hours').value,
+    signame:    $('ed-signame').value,
+    sigrole:    $('ed-sigrole').value,
+    verify:     verifyId,
+    logoText:   $('ed-logotext').value,
+    logoInvert: $('ed-logo-invert').checked,
+    logo:       $('sel-logo').value,
+    sig:        $('sel-sig').value,
+    left:       $('sel-left').value,
+    right:      $('sel-right').value,
+  };
 
-function bindFile(inputId, labelId, key) {
-  $(inputId).addEventListener('change', function(e){
-    const file = e.target.files[0];
-    if(!file) return;
-    
-    $(labelId).textContent = "📁 " + file.name;
-    $(labelId).style.borderStyle = "solid";
-    $(labelId).style.borderColor = "rgba(255,255,255,0.6)";
+  localStorage.setItem('cert_' + verifyId, JSON.stringify(data));
+  localStorage.setItem('cert_payload', JSON.stringify(data));
 
-    // NUEVA LÓGICA: En lugar de convertir a base64, creamos la ruta a la carpeta images/
-    _imgs[key] = "images/" + file.name;
-  });
+  const origin = window.location.origin;
+  let path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
+  if(!path.endsWith('/')) path += '/';
+  
+  const url = origin + path + 'view.html#' + verifyId;
+  
+  $('link-output').value = url;
+  $('link-open').href = url;
+  $('link-result').style.display = 'block';
+  $('link-output').select();
+  $('link-result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
 }
 
-bindFile('file-logo', 'lbl-logo', 'logo');
-bindFile('file-sig', 'lbl-sig', 'sig');
-bindFile('file-left', 'lbl-left', 'left');
-bindFile('file-right', 'lbl-right', 'right');
-
-function generateLink(){
-  const verifyId = $('ed-verify').value
+function copyGenLink(){
+  const input = $('link-output');
+  input.select();
+  navigator.clipboard.writeText(input.value).catch(()=>{});
+  const btn = input.nextElementSibling;
+  btn.textContent = '✓ Copiado';
+  setTimeout(()=> btn.textContent = 'Copiar Enlace', 2000);
+}
+</script>
+</body>
+</html>
