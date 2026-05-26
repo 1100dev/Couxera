@@ -71,6 +71,7 @@
     .cert-body { position: relative; z-index: 2; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 2% 6% 1%; text-align: center; }
     .cert-name { font-family:'DM Serif Display', serif; font-size: clamp(1.8rem, 4.8vw, 3.5rem); color: var(--dark); line-height: 1.1; margin-bottom: 0.5%; }
     .cert-completed { font-size: clamp(.6rem, 1.3vw, .85rem); color: var(--muted); font-weight: 400; margin-bottom: 0.5%; }
+    .cert-bottom-space { margin-bottom: 1.5%; }
     .cert-course { font-family:'DM Serif Display', serif; font-size: clamp(1.2rem, 3.2vw, 2.3rem); color: var(--dark); font-weight: 700; line-height: 1.2; margin-bottom: 1.5%; }
     .cert-subtitle { font-size: clamp(.55rem, 1.15vw, .75rem); color: var(--muted); max-width: 90%; line-height: 1.5; margin-bottom: 2%; }
     
@@ -150,7 +151,7 @@
   <button class="btn btn-outline" onclick="closeLinkBox()">✕</button>
 </div>
 <p class="link-notice" id="link-notice">
-  ℹ️ Los datos del certificado han sido recuperados con éxito.
+  ℹ️ Los datos del certificado han sido validados directamente desde el enlace dinámico.
 </p>
 
 <div class="cert-wrap">
@@ -207,9 +208,19 @@ function loadFromSource(){
   const hashId = location.hash.slice(1).trim();
   if (!hashId) return null;
 
-  const localData = localStorage.getItem('cert_' + hashId);
-  if (localData) return JSON.parse(localData);
+  // NUEVA LÓGICA: Descodifica los datos directamente de la URL (Permite Modo Incógnito)
+  try {
+    const decoded = decodeURIComponent(escape(atob(hashId)));
+    if (decoded.startsWith('{')) {
+      return JSON.parse(decoded);
+    }
+  } catch(e) {
+    // Respaldo por si se usa un ID de desarrollo estático viejo
+    const localData = localStorage.getItem('cert_' + hashId);
+    if (localData) return JSON.parse(localData);
+  }
 
+  // Respaldo secundario general
   const fallbackData = localStorage.getItem('cert_payload');
   if (fallbackData) return JSON.parse(fallbackData);
 
@@ -218,19 +229,19 @@ function loadFromSource(){
 
 function renderCert(data){
   $('c-name').textContent       = data.name     || '';
-  $('c-course').textContent   = data.course   || '';
-  $('c-subtitle').textContent = data.subtitle || '';
-  $('c-hours').textContent    = data.hours    || '';
-  $('c-verify-id').textContent = data.verify   || 'N/A';
-  $('c-signame').textContent  = data.signame  || '';
-  $('c-sigrole').textContent  = data.sigrole  || '';
+  $('c-course').textContent     = data.course   || '';
+  $('c-subtitle').textContent   = data.subtitle || '';
+  $('c-hours').textContent      = data.hours    || '';
+  $('c-verify-id').textContent  = data.verify   || 'N/A';
+  $('c-signame').textContent    = data.signame  || '';
+  $('c-sigrole').textContent    = data.sigrole  || '';
   
-  $('c-verify-url').textContent = window.location.origin + window.location.pathname + '#' + (data.verify || 'CERT-PREVIEW');
+  $('c-verify-url').textContent = window.location.href;
   
   document.title = (data.name || 'Certificado') + ' — Certificado';
   $('page-title').textContent = document.title;
 
-  // Renderizar área del Logo Superior
+  // Renderizar Logo Superior
   if(data.logo && data.logo.trim() !== ""){
     $('cert-logo-area').innerHTML = `<img src="${data.logo}" alt="Logo" style="filter:${data.logoInvert?'brightness(0)':'none'};" onerror="this.style.display='none'"/>`;
   } else if(data.logoText){
@@ -253,7 +264,7 @@ function renderCert(data){
     $('cert-left-slot').innerHTML = `<div style="width:100%; height:100%; border:1px dashed rgba(0,0,0,0.1); display:flex; align-items:center; justify-content:center; font-size:0.5rem; color:var(--muted);">QR</div>`;
   }
 
-  // Renderizar Insignia Derecha Extra si existe
+  // Renderizar Insignia Derecha Extra
   if(data.right && data.right.trim() !== ""){
     $('cert-right-slot').innerHTML = `<img src="${data.right}" alt="Sello" onerror="this.style.display='none'"/>`;
   }
@@ -277,7 +288,7 @@ const certData = loadFromSource();
 
 if(certData){
   renderCert(certData);
-  $('link-input').value = window.location.origin + window.location.pathname + '#' + (certData.verify || 'CERT-PREVIEW');
+  $('link-input').value = window.location.href;
   $('link-box').classList.add('visible');
   $('link-notice').classList.add('visible');
 } else {
