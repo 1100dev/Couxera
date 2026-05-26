@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Certificado</title>
+  <title>Certificado — Panel Creador</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
@@ -124,8 +124,8 @@
         <input type="text" id="ed-hours" value="120 horas"/>
       </div>
       <div class="form-group">
-        <label for="ed-verify">Código de Verificación / ID</label>
-        <input type="text" id="ed-verify" value="CERT-2026-AI984"/>
+        <label for="ed-verify">Código de Verificación / ID Único</label>
+        <input type="text" id="ed-verify" value="" placeholder="Se generará automáticamente si queda vacío"/>
       </div>
     </div>
 
@@ -190,7 +190,7 @@
       </div>
     </div>
 
-    <button class="btn-primary" onclick="generateLink()">Guardar y Generar Enlace</button>
+    <button class="btn-primary" onclick="generateLink()">Guardar y Generar Enlace Único</button>
 
     <div class="result-box" id="link-result">
       <div class="result-title">¡Certificado Guardado Exitosamente!</div>
@@ -227,7 +227,24 @@
     bindFile('file-left', 'left', 'lbl-left', 'pre-left');
     bindFile('file-right', 'right', 'lbl-right', 'pre-right');
 
+    function generateUUID() {
+      const chars = '0123456789ABCDEF';
+      let result = 'CERT-2026-';
+      for (let i = 0; i < 6; i++) {
+        result += chars[Math.floor(Math.random() * 16)];
+      }
+      return result;
+    }
+
     function generateLink(){
+      let verifyInput = $('ed-verify');
+      // Si está vacío o contiene el código de ejemplo genérico antiguo, forzamos la generación de un ID único real
+      if (!verifyInput.value.trim() || verifyInput.value.trim() === 'CERT-2026-AI984') {
+        verifyInput.value = generateUUID();
+      }
+
+      const certId = verifyInput.value.trim();
+
       const data = {
         name:       $('ed-name').value,
         course:     $('ed-course').value,
@@ -235,7 +252,7 @@
         hours:      $('ed-hours').value,
         signame:    $('ed-signame').value,
         sigrole:    $('ed-sigrole').value,
-        verify:     $('ed-verify').value,
+        verify:     certId,
         logoText:   $('ed-logotext').value,
         logoInvert: $('ed-logo-invert').checked,
         logo:       _imgs.logo,
@@ -244,21 +261,22 @@
         right:      _imgs.right,
       };
 
-      // Guardamos el payload en localStorage para evitar URLs masivas que rompen Vercel
+      // Guardamos la información asociándola inequívocamente al ID
       try {
+        localStorage.setItem('cert_' + certId, JSON.stringify(data));
+        // Guardamos también una versión global de respaldo (modo desarrollador)
         localStorage.setItem('cert_payload', JSON.stringify(data));
       } catch(e) {
-        alert("Las imágenes cargadas superan el espacio disponible del navegador. Intenta optimizarlas.");
+        alert("Las imágenes cargadas son muy pesadas para el almacenamiento local. Intenta reducirlas.");
         return;
       }
 
-      // RESOLUCIÓN DEL 404: Lógica de enrutamiento robusta compatible con entornos locales y Vercel Production
       const origin = window.location.origin;
       const path = window.location.pathname;
-      
-      // Extrae el directorio base de forma segura sin importar si termina en / o en archivo
       const baseDir = path.substring(0, path.lastIndexOf('/')) + '/';
-      const url = origin + baseDir + 'view.html';
+      
+      // Inyección limpia del hash de enrutamiento dinámico
+      const url = origin + baseDir + 'view.html#' + certId;
 
       const box = $('link-result');
       const input = $('link-output');

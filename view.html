@@ -27,7 +27,7 @@
       pointer-events: none;
     }
 
-    /* Top bar */
+    /* Top bar (Control Admin) */
     .topbar {
       position: relative; z-index: 10;
       width: 100%; max-width: 860px;
@@ -60,7 +60,6 @@
     .btn:hover { opacity: .82; transform: translateY(-1px); }
     .btn-primary { background: #fff; color: #0d1321; }
     .btn-outline  { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.2); }
-    .btn-green    { background: #22c55e; color: #fff; }
 
     /* Link box */
     .link-box {
@@ -99,7 +98,7 @@
       line-height: 1.6;
       display: none;
     }
-    .link-notice.visible { block; }
+    .link-notice.visible { display: block; }
 
     /* Cert wrap */
     .cert-wrap { position: relative; z-index: 3; width: 100%; max-width: 860px; }
@@ -257,6 +256,7 @@
 </div>
 <div class="vignette"></div>
 
+<!-- Top bar -->
 <div class="topbar">
   <span class="topbar-label">Vista del Certificado</span>
   <div class="btn-group">
@@ -265,15 +265,17 @@
   </div>
 </div>
 
+<!-- Link box -->
 <div class="link-box" id="link-box">
   <input type="text" id="link-input" readonly/>
-  <button class="btn btn-primary" onclick="copyLink()">Copiar Enlace</button>
+  <button class="btn btn-primary" onclick="copyLink()">Copiar</button>
   <button class="btn btn-outline" onclick="closeLinkBox()">✕</button>
 </div>
 <p class="link-notice" id="link-notice">
-  ℹ️ Los datos del certificado han sido recuperados con éxito. Puedes copiar el enlace superior o imprimir este documento directamente.
+  ℹ️ Los datos del certificado han sido recuperados con éxito.
 </p>
 
+<!-- Certificate -->
 <div class="cert-wrap">
   <div class="cert" id="certificate">
     <div class="cert-bg-svg">
@@ -334,15 +336,22 @@
 <script>
 function $(id){ return document.getElementById(id); }
 
-// CORRECCIÓN CENTRAL: Cambiar la extracción de datos desde la URL (Hash) hacia LocalStorage de manera segura
 function loadFromSource(){
-  const localData = localStorage.getItem('cert_payload');
-  if(!localData) return false;
-  try {
-    return JSON.parse(localData);
-  } catch(e) {
-    return false;
+  const hashId = location.hash.slice(1);
+  
+  if (hashId) {
+    const localData = localStorage.getItem('cert_' + hashId);
+    if (localData) {
+      return { data: JSON.parse(localData), isPublicView: true };
+    }
   }
+  
+  const fallbackData = localStorage.getItem('cert_payload');
+  if (fallbackData) {
+    return { data: JSON.parse(fallbackData), isPublicView: false };
+  }
+  
+  return null;
 }
 
 function renderCert(data){
@@ -352,62 +361,70 @@ function renderCert(data){
   $('c-hours').textContent    = data.hours    || '';
   $('c-signame').textContent  = data.signame  || '';
   $('c-sigrole').textContent  = data.sigrole  || '';
-  $('c-verify-url').textContent = data.verify || '';
+  $('c-verify-url').textContent = window.location.href;
   document.title = (data.name || 'Certificado') + ' — Certificado';
   $('page-title').textContent = document.title;
 
   // Logo
   if(data.logo){
     $('cert-logo-area').innerHTML =
-      `<img src="${data.logo}" alt="Logo" style="display:block;width:100%;height:100%;max-width:280px;max-height:60px;object-fit:contain;filter:${data.logoInvert?'brightness(0) cubic-bezier(0,0,0,0)':'none'};"/>`;
+      `<img src="${data.logo}" alt="Logo" style="display:block;width:100%;height:100%;max-width:280px;max-height:60px;object-fit:contain;filter:${data.logoInvert?'brightness(0) invert(1)':'none'};"/>`;
   } else if(data.logoText){
     $('cert-logo-area').innerHTML = `<span class="logo-text">${data.logoText}</span>`;
   }
 
-  // Signature image
+  // Signature
   if(data.sig){
     $('cert-sig-img-wrap').innerHTML =
       `<img src="${data.sig}" alt="Firma" style="max-height:100%;max-width:100%;object-fit:contain;mix-blend-mode:multiply;"/>`;
   }
 
-  // Left image
+  // Left slot
   if(data.left){
     $('cert-left-slot').innerHTML = `<img src="${data.left}" alt=""/>`;
   }
 
-  // Right image
+  // Right slot
   if(data.right){
     $('cert-right-slot').innerHTML = `<img src="${data.right}" alt=""/>`;
   }
 }
 
-// ── Copy link ────────────────────────────────────────────
 function copyLink(){
   const input = $('link-input');
   input.select();
   navigator.clipboard.writeText(input.value).catch(()=>{});
   const btn = input.nextElementSibling;
   btn.textContent = '✓ Copiado';
-  setTimeout(()=> btn.textContent = 'Copiar Enlace', 2000);
+  setTimeout(()=> btn.textContent = 'Copiar', 2000);
 }
+
 function closeLinkBox(){
   $('link-box').classList.remove('visible');
   $('link-notice').classList.remove('visible');
 }
 
-// ── Init ─────────────────────────────────────────────────
-const certData = loadFromSource();
-if(certData){
-  renderCert(certData);
-  // Mostrar la caja superior con la URL de visualización limpia en Vercel
-  $('link-input').value = location.href;
-  $('link-box').classList.add('visible');
-  $('link-notice').classList.add('visible');
+// Inicialización de la Vista Inteligente
+const result = loadFromSource();
+if(result){
+  renderCert(result.data);
+  
+  if (result.isPublicView) {
+    // Si la URL contiene el hash del ID del certificado, destruimos visualmente los componentes administrativos
+    const topBar = document.querySelector('.topbar');
+    if(topBar) topBar.style.display = 'none';
+    $('link-box').classList.remove('visible');
+    $('link-notice').classList.remove('visible');
+  } else {
+    // Modo creador
+    $('link-input').value = location.href;
+    $('link-box').classList.add('visible');
+    $('link-notice').classList.add('visible');
+  }
 } else {
-  // No data: show message
   document.querySelector('.cert-wrap').innerHTML =
     `<div class="empty-state">
-      No hay datos de certificado.<br>
+      No hay datos de certificado válidos.<br>
       <a href="certificate.html" style="color:rgba(255,255,255,0.4);text-decoration:underline;">Ir al editor →</a>
     </div>`;
 }
