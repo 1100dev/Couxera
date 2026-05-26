@@ -3,300 +3,200 @@
 <head>
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Certificado — Panel Creador</title>
-  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <title>Editor de Certificados</title>
+  <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
   <style>
     *, *::before, *::after { box-sizing: border-box; margin:0; padding:0; }
-    :root {
-      --bg: #090909;
-      --cert-bg: #f5f4f0;
-      --dark: #0d1321;
-      --muted: #5a5a6a;
-    }
-
-    body {
-      background: var(--bg);
-      font-family: 'DM Sans', sans-serif;
-      min-height: 100vh;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      padding: 2rem 1rem 3rem;
-    }
-
-    /* BG */
-    .bg-pattern { position: fixed; inset: 0; z-index: 0; }
-    .bg-pattern svg { width:100%; height:100%; }
-    .vignette {
-      position: fixed; inset: 0; z-index: 1;
-      background: radial-gradient(ellipse at center, transparent 20%, rgba(0,0,0,0.7) 100%);
-      pointer-events: none;
-    }
-
-    /* Form & Container */
-    .container { position: relative; z-index: 2; width: 100%; max-width: 700px; background: #121212; border: 1px solid rgba(255,255,255,0.08); padding: 2.5rem; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
-    h1 { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; color: #fff; letter-spacing: 1px; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem; }
+    body { background: #090909; font-family: 'DM Sans', sans-serif; color: #fff; padding: 2rem 1rem; display: flex; flex-direction: column; align-items: center; }
     
-    .form-group { margin-bottom: 1.25rem; }
-    .form-row { display: flex; gap: 1rem; }
-    .form-row .form-group { flex: 1; }
+    .container { width: 100%; max-width: 600px; background: #121212; border: 1px solid rgba(255,255,255,0.08); padding: 2rem; border-radius: 8px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+    h1 { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; letter-spacing: 0.05em; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: .5rem; }
     
-    label { display: block; color: #a0a0a0; font-size: 0.85rem; font-weight: 500; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px; }
-    input[type="text"], textarea { width: 100%; background: #1a1a1a; border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 0.75rem; color: #fff; font-family: inherit; font-size: 0.95rem; transition: all 0.2s ease; }
-    input[type="text"]:focus, textarea:focus { outline: none; border-color: #fff; background: #222; }
-    textarea { height: 70px; resize: none; }
+    .form-group { margin-bottom: 1.2rem; display: flex; flex-direction: column; gap: .4rem; }
+    label { font-size: .8rem; color: rgba(255,255,255,0.6); font-weight: 500; text-transform: uppercase; letter-spacing: .05em; }
+    input[type="text"], textarea { background: #1a1a1a; border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; padding: .6rem .8rem; color: #fff; font-family: inherit; font-size: .9rem; outline: none; transition: border .2s; }
+    input[type="text"]:focus, textarea:focus { border-color: #fff; }
     
-    .checkbox-group { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; }
-    .checkbox-group input { cursor: pointer; }
-    .checkbox-group label { margin-bottom: 0; text-transform: none; cursor: pointer; }
-
-    /* Custom File Input button style */
-    .file-input-wrapper { position: relative; margin-top: 0.25rem; }
-    .file-label { display: block; background: #222; border: 1px dashed rgba(255,255,255,0.2); padding: 0.75rem; text-align: center; border-radius: 6px; cursor: pointer; color: #ccc; font-size: 0.9rem; transition: background 0.2s; }
-    .file-label:hover { background: #2a2a2a; color: #fff; }
+    .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .checkbox-group { display: flex; align-items: center; gap: .5rem; margin-top: .5rem; }
+    
+    .file-input-wrapper { position: relative; margin-top: .2rem; }
     .file-input-wrapper input[type="file"] { position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
-    .file-preview { margin-top: 0.5rem; font-size: 0.8rem; color: #888; display: flex; align-items: center; gap: 0.5rem; }
-    .file-preview img { max-height: 30px; border-radius: 4px; background: #fff; padding: 2px; }
-
-    button.btn-primary { width: 100%; background: #ffffff; color: #000; border: none; padding: 0.9rem; border-radius: 6px; font-weight: 600; font-size: 1rem; cursor: pointer; margin-top: 1.5rem; transition: opacity 0.2s; }
-    button.btn-primary:hover { opacity: 0.9; }
-
-    /* Result Box */
-    .result-box { display: none; margin-top: 2rem; padding: 1.5rem; background: #161616; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; animation: fadeIn 0.3s ease forwards; }
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-    .result-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: #fff; margin-bottom: 0.75rem; letter-spacing: 0.5px; }
-    .input-copy-group { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
-    .input-copy-group input { flex: 1; background: #0c0c0c; border: 1px solid rgba(255,255,255,0.2); padding: 0.75rem; border-radius: 6px; color: #888; font-size: 0.85rem; }
-    .btn-sec { background: #2a2a2a; color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 0.75rem 1.2rem; border-radius: 6px; cursor: pointer; font-size: 0.9rem; font-weight: 500; white-space: nowrap; }
-    .btn-sec:hover { background: #3a3a3a; }
-    .btn-action-view { display: block; text-align: center; background: #fff; color: #000; padding: 0.8rem; border-radius: 6px; font-weight: 600; text-decoration: none; font-size: 0.95rem; }
-    .btn-action-view:hover { opacity: 0.9; }
+    .file-btn { background: rgba(255,255,255,0.05); border: 1px dashed rgba(255,255,255,0.2); padding: .6rem; border-radius: 4px; text-align: center; font-size: .8rem; color: rgba(255,255,255,0.8); display: block; }
+    .file-input-wrapper:hover .file-btn { background: rgba(255,255,255,0.08); border-color: rgba(255,255,255,0.4); }
+    
+    .btn-submit { background: #fff; color: #000; font-weight: 600; text-transform: uppercase; font-size: .85rem; letter-spacing: .1em; padding: .8rem; border: none; border-radius: 4px; margin-top: 1.5rem; cursor: pointer; width: 100%; transition: opacity .2s; }
+    .btn-submit:hover { opacity: .9; }
+    
+    .result-box { background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.15); padding: 1.2rem; border-radius: 6px; margin-top: 1.5rem; display: none; }
+    .result-title { font-size: .85rem; font-weight: 600; text-transform: uppercase; color: #fff; margin-bottom: .6rem; }
+    .result-actions { display: flex; gap: .5rem; margin-top: .6rem; }
+    .btn-small { padding: .4rem .8rem; font-size: .75rem; border-radius: 3px; cursor: pointer; text-decoration: none; font-weight: 500; }
+    .btn-small.primary { background: #fff; color: #000; border: none; }
+    .btn-small.outline { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.2); }
   </style>
 </head>
 <body>
 
-  <!-- BG Geometric Isométrico SVG -->
-  <div class="bg-pattern">
-    <svg xmlns="http://www.w3.org/2000/svg">
-      <defs>
-        <pattern id="hex" width="116" height="200" patternUnits="userSpaceOnUse" patternTransform="scale(0.35)">
-          <polygon points="58,0 116,33.5 116,100.5 58,134 0,100.5 0,33.5" fill="none" stroke="rgba(255,255,255,0.035)" stroke-width="0.8"/>
-          <polygon points="58,67 116,100.5 116,167.5 58,201 0,167.5 0,100.5" fill="none" stroke="rgba(255,255,255,0.035)" stroke-width="0.8"/>
-          <line x1="58" y1="0" x2="58" y2="67" stroke="rgba(255,255,255,0.025)" stroke-width="0.6"/>
-          <line x1="116" y1="33.5" x2="58" y2="67" stroke="rgba(255,255,255,0.025)" stroke-width="0.6"/>
-          <line x1="0" y1="33.5" x2="58" y2="67" stroke="rgba(255,255,255,0.025)" stroke-width="0.6"/>
-          <line x1="58" y1="134" x2="58" y2="201" stroke="rgba(255,255,255,0.025)" stroke-width="0.6"/>
-          <line x1="116" y1="167.5" x2="58" y2="201" stroke="rgba(255,255,255,0.025)" stroke-width="0.6"/>
-          <line x1="0" y1="167.5" x2="58" y2="201" stroke="rgba(255,255,255,0.025)" stroke-width="0.6"/>
-          <polygon points="58,67 116,100.5 116,134 58,100.5 0,134 0,100.5" fill="none" stroke="rgba(255,255,255,0.055)" stroke-width="0.8"/>
-          <line x1="58" y1="67" x2="58" y2="100" stroke="rgba(255,255,255,0.04)" stroke-width="0.6"/>
-          <line x1="0" y1="100.5" x2="58" y2="100" stroke="rgba(255,255,255,0.04)" stroke-width="0.6"/>
-          <line x1="116" y1="100.5" x2="58" y2="100" stroke="rgba(255,255,255,0.04)" stroke-width="0.6"/>
-        </pattern>
-      </defs>
-      <rect width="100%" height="100%" fill="var(--bg)"/>
-      <rect width="100%" height="100%" fill="url(#hex)"/>
-    </svg>
+<div class="container">
+  <h1>Editor de Certificado</h1>
+  
+  <div class="form-group">
+    <label>Nombre del Alumno</label>
+    <input type="text" id="ed-name" placeholder="Ej. Juan Pérez Gómez"/>
   </div>
-  <div class="vignette"></div>
-
-  <div class="container">
-    <h1>Creador de Certificados</h1>
-    
+  
+  <div class="form-group">
+    <label>Nombre del Curso / Máster</label>
+    <input type="text" id="ed-course" placeholder="Ej. Máster Avanzado en Inteligencia Artificial"/>
+  </div>
+  
+  <div class="form-group">
+    <label>Descripción / Subtítulo</label>
+    <textarea id="ed-subtitle" rows="2" placeholder="Por haber cumplido satisfactoriamente con todos los módulos..."></textarea>
+  </div>
+  
+  <div class="row">
     <div class="form-group">
-      <label for="ed-name">Nombre del Alumno</label>
-      <input type="text" id="ed-name" value="Juan Perez Gomez"/>
+      <label>Duración</label>
+      <input type="text" id="ed-hours" placeholder="Ej. 120 horas"/>
     </div>
-
     <div class="form-group">
-      <label for="ed-course">Nombre del Curso / Logro</label>
-      <input type="text" id="ed-course" value="Master Avanzado en Inteligencia Artificial"/>
+      <label>ID de Certificación (Slug URL)</label>
+      <input type="text" id="ed-verify" placeholder="Ej. CERT-2026-F419A2"/>
     </div>
-
+  </div>
+  
+  <div class="row">
     <div class="form-group">
-      <label for="ed-subtitle">Subtítulo / Descripción Detallada</label>
-      <textarea id="ed-subtitle">Por haber cumplido satisfactoriamente con todos los módulos académicos, evaluaciones prácticas y proyectos especiales diseñados para la especialización técnica y despliegue de modelos masivos.</textarea>
+      <label>Nombre del Director</label>
+      <input type="text" id="ed-signame" placeholder="Ej. Executive Director"/>
     </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label for="ed-hours">Horas Académicas</label>
-        <input type="text" id="ed-hours" value="120 horas"/>
-      </div>
-      <div class="form-group">
-        <label for="ed-verify">Código de Verificación / ID Único</label>
-        <input type="text" id="ed-verify" value="" placeholder="Se generará automáticamente si queda vacío"/>
-      </div>
-    </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label for="ed-signame">Nombre del Firmante</label>
-        <input type="text" id="ed-signame" value="Dra. Elena Rostova"/>
-      </div>
-      <div class="form-group">
-        <label for="ed-sigrole">Cargo del Firmante</label>
-        <input type="text" id="ed-sigrole" value="Directora de Innovación y Tecnología"/>
-      </div>
-    </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label for="ed-logotext">Texto Alternativo del Logo</label>
-        <input type="text" id="ed-logotext" value="NEXUS LABS"/>
-        <div class="checkbox-group">
-          <input type="checkbox" id="ed-logo-invert"/>
-          <label for="ed-logo-invert">Invertir color del logo a oscuro en certificado</label>
-        </div>
-      </div>
-    </div>
-
-    <!-- IMÁGENES (Subida Base64) -->
-    <div class="form-row" style="margin-top:0.5rem;">
-      <div class="form-group">
-        <label>Logo de Organización</label>
-        <div class="file-input-wrapper">
-          <div class="file-label" id="lbl-logo">Subir Logo (PNG/SVG)</div>
-          <input type="file" id="file-logo" accept="image/*"/>
-        </div>
-        <div class="file-preview" id="pre-logo"></div>
-      </div>
-      <div class="form-group">
-        <label>Firma Autorizada</label>
-        <div class="file-input-wrapper">
-          <div class="file-label" id="lbl-sig">Subir Firma (Fondo Transparente)</div>
-          <input type="file" id="file-sig" accept="image/*"/>
-        </div>
-        <div class="file-preview" id="pre-sig"></div>
-      </div>
-    </div>
-
-    <div class="form-row">
-      <div class="form-group">
-        <label>Marca de Esquina Izquierda</label>
-        <div class="file-input-wrapper">
-          <div class="file-label" id="lbl-left">Subir Imagen Izq. (Opcional)</div>
-          <input type="file" id="file-left" accept="image/*"/>
-        </div>
-        <div class="file-preview" id="pre-left"></div>
-      </div>
-      <div class="form-group">
-        <label>Marca de Esquina Derecha</label>
-        <div class="file-input-wrapper">
-          <div class="file-label" id="lbl-right">Subir Imagen Der. (Opcional)</div>
-          <input type="file" id="file-right" accept="image/*"/>
-        </div>
-        <div class="file-preview" id="pre-right"></div>
-      </div>
-    </div>
-
-    <button class="btn-primary" onclick="generateLink()">Guardar y Generar Enlace Único</button>
-
-    <div class="result-box" id="link-result">
-      <div class="result-title">¡Certificado Guardado Exitosamente!</div>
-      <div class="input-copy-group">
-        <input type="text" id="link-output" readonly/>
-        <button class="btn-sec" onclick="copyGenLink()">Copiar Enlace</button>
-      </div>
-      <a href="#" class="btn-action-view" id="link-open" target="_blank">Ir a la Vista del Certificado</a>
+    <div class="form-group">
+      <label>Cargo del Director</label>
+      <input type="text" id="ed-sigrole" placeholder="Ej. Director Académico"/>
     </div>
   </div>
 
-  <script>
-    const $ = id => document.getElementById(id);
-    const _imgs = { logo: '', sig: '', left: '', right: '' };
+  <div class="form-group">
+    <label>Texto alternativo del Logo (Si no subes imagen)</label>
+    <input type="text" id="ed-logotext" placeholder="Ej. COURSERA"/>
+    <div class="checkbox-group">
+      <input type="checkbox" id="ed-logo-invert"/>
+      <label for="ed-logo-invert" style="text-transform:none; font-size:.75rem;">Invertir color del logo a negro</label>
+    </div>
+  </div>
 
-    function bindFile(inputId, storageKey, labelId, previewId) {
-      $(inputId).addEventListener('change', function(e) {
-        const file = e.target.files[0];
-        if(!file) return;
-        $(labelId).textContent = '✓ Archivo Cargado';
-        $(labelId).style.borderColor = 'rgba(255,255,255,0.4)';
-        
-        const reader = new FileReader();
-        reader.onload = function(evt) {
-          _imgs[storageKey] = evt.target.result;
-          $(previewId).innerHTML = `<img src="${evt.target.result}" alt="Preview"/> <span>${file.name}</span>`;
-        };
-        reader.readAsDataURL(file);
-      });
-    }
+  <div class="row">
+    <div class="form-group">
+      <label>Imagen del Logo (Superior)</label>
+      <div class="file-input-wrapper">
+        <span class="file-btn" id="lbl-logo">Seleccionar archivo...</span>
+        <input type="file" id="file-logo" accept="image/*"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Firma Digitalizada (Centro)</label>
+      <div class="file-input-wrapper">
+        <span class="file-btn" id="lbl-sig">Seleccionar archivo...</span>
+        <input type="file" id="file-sig" accept="image/*"/>
+      </div>
+    </div>
+  </div>
 
-    bindFile('file-logo', 'logo', 'lbl-logo', 'pre-logo');
-    bindFile('file-sig', 'sig', 'lbl-sig', 'pre-sig');
-    bindFile('file-left', 'left', 'lbl-left', 'pre-left');
-    bindFile('file-right', 'right', 'lbl-right', 'pre-right');
+  <div class="row">
+    <div class="form-group">
+      <label>Código QR (Inferior Izquierdo)</label>
+      <div class="file-input-wrapper">
+        <span class="file-btn" id="lbl-left">Seleccionar QR...</span>
+        <input type="file" id="file-left" accept="image/*"/>
+      </div>
+    </div>
+    <div class="form-group">
+      <label>Sello / Insignia Extra (Opcional)</label>
+      <div class="file-input-wrapper">
+        <span class="file-btn" id="lbl-right">Seleccionar Sello...</span>
+        <input type="file" id="file-right" accept="image/*"/>
+      </div>
+    </div>
+  </div>
 
-    function generateUUID() {
-      const chars = '0123456789ABCDEF';
-      let result = 'CERT-2026-';
-      for (let i = 0; i < 6; i++) {
-        result += chars[Math.floor(Math.random() * 16)];
-      }
-      return result;
-    }
+  <button class="btn-submit" onclick="generateLink()">Generar Certificado</button>
 
-    function generateLink(){
-      let verifyInput = $('ed-verify');
-      // Si está vacío o contiene el código de ejemplo genérico antiguo, forzamos la generación de un ID único real
-      if (!verifyInput.value.trim() || verifyInput.value.trim() === 'CERT-2026-AI984') {
-        verifyInput.value = generateUUID();
-      }
+  <div class="result-box" id="link-result">
+    <div class="result-title">🔗 ¡Enlace generado con éxito!</div>
+    <input type="text" id="link-output" style="width:100%;" readonly/>
+    <div class="result-actions">
+      <button class="btn-small primary" onclick="copyGenLink()">Copiar Enlace</button>
+      <a class="btn-small outline" id="link-open" target="_blank">Abrir Vista →</a>
+    </div>
+  </div>
+</div>
 
-      const certId = verifyInput.value.trim();
+<script>
+function $(id){ return document.getElementById(id); }
 
-      const data = {
-        name:       $('ed-name').value,
-        course:     $('ed-course').value,
-        subtitle:   $('ed-subtitle').value,
-        hours:      $('ed-hours').value,
-        signame:    $('ed-signame').value,
-        sigrole:    $('ed-sigrole').value,
-        verify:     certId,
-        logoText:   $('ed-logotext').value,
-        logoInvert: $('ed-logo-invert').checked,
-        logo:       _imgs.logo,
-        sig:        _imgs.sig,
-        left:       _imgs.left,
-        right:      _imgs.right,
-      };
+let _imgs = { logo: '', sig: '', left: '', right: '' };
 
-      // Guardamos la información asociándola inequívocamente al ID
-      try {
-        localStorage.setItem('cert_' + certId, JSON.stringify(data));
-        // Guardamos también una versión global de respaldo (modo desarrollador)
-        localStorage.setItem('cert_payload', JSON.stringify(data));
-      } catch(e) {
-        alert("Las imágenes cargadas son muy pesadas para el almacenamiento local. Intenta reducirlas.");
-        return;
-      }
+function bindFile(inputId, labelId, key) {
+  $(inputId).addEventListener('change', function(e){
+    const file = e.target.files[0];
+    if(!file) return;
+    $(labelId).textContent = file.name;
+    const reader = new FileReader();
+    reader.onload = function(evt) {
+      _imgs[key] = evt.target.result;
+    };
+    reader.readAsDataURL(file);
+  });
+}
 
-      const origin = window.location.origin;
-      const path = window.location.pathname;
-      const baseDir = path.substring(0, path.lastIndexOf('/')) + '/';
-      
-      // Inyección limpia del hash de enrutamiento dinámico
-      const url = origin + baseDir + 'view.html#' + certId;
+bindFile('file-logo', 'lbl-logo', 'logo');
+bindFile('file-sig', 'lbl-sig', 'sig');
+bindFile('file-left', 'lbl-left', 'left');
+bindFile('file-right', 'lbl-right', 'right');
 
-      const box = $('link-result');
-      const input = $('link-output');
-      const openBtn = $('link-open');
-      
-      input.value = url;
-      openBtn.href = url;
-      box.style.display = 'block';
-      input.select();
-      box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-    }
+function generateLink(){
+  const verifyId = $('ed-verify').value.trim() || 'CERT-PREVIEW';
+  
+  const data = {
+    name:       $('ed-name').value,
+    course:     $('ed-course').value,
+    subtitle:   $('ed-subtitle').value,
+    hours:      $('ed-hours').value,
+    signame:    $('ed-signame').value,
+    sigrole:    $('ed-sigrole').value,
+    verify:     verifyId,
+    logoText:   $('ed-logotext').value,
+    logoInvert: $('ed-logo-invert').checked,
+    logo:       _imgs.logo,
+    sig:        _imgs.sig,
+    left:       _imgs.left,
+    right:      _imgs.right,
+  };
 
-    function copyGenLink(){
-      const input = $('link-output');
-      input.select();
-      navigator.clipboard.writeText(input.value).catch(()=>{});
-      const btn = input.nextElementSibling;
-      btn.textContent = '✓ Copiado';
-      setTimeout(()=> btn.textContent = 'Copiar Enlace', 2000);
-    }
-  </script>
+  // Guardamos el Payload completo localmente indexado por su ID exclusivo
+  localStorage.setItem('cert_' + verifyId, JSON.stringify(data));
+  localStorage.setItem('cert_payload', JSON.stringify(data));
+
+  // Creamos una URL optimizada y limpia basada en el ID para producción
+  const url = location.href.replace(/certificate\.html.*$/, '') + 'view.html#' + verifyId;
+  
+  $('link-output').value = url;
+  $('link-open').href = url;
+  $('link-result').style.display = 'block';
+  $('link-output').select();
+  $('link-result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+}
+
+function copyGenLink(){
+  const input = $('link-output');
+  input.select();
+  navigator.clipboard.writeText(input.value).catch(()=>{});
+  const btn = input.nextElementSibling;
+  btn.textContent = '✓ Copiado';
+  setTimeout(()=> btn.textContent = 'Copiar Enlace', 2000);
+}
+</script>
 </body>
 </html>
