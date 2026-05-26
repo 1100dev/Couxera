@@ -59,7 +59,7 @@
       <input type="text" id="ed-hours" placeholder="Ej. 120 horas"/>
     </div>
     <div class="form-group">
-      <label>ID de Certificación (Slug URL)</label>
+      <label>ID de Certificación (Slug URL de Respaldo)</label>
       <input type="text" id="ed-verify" placeholder="Ej. CERT-PREVIEW"/>
     </div>
   </div>
@@ -125,11 +125,9 @@
 <script>
 function $(id){ return document.getElementById(id); }
 
-// Función auxiliar para construir la ruta correcta solo si el usuario escribió algo
 function buildImagePath(val) {
   const cleanVal = val.trim();
   if (!cleanVal) return '';
-  // Si por error ya escribiste "images/", lo dejamos igual; si no, lo añadimos por delante
   if (cleanVal.startsWith('images/')) return cleanVal;
   return 'images/' + cleanVal;
 }
@@ -147,22 +145,26 @@ function generateLink(){
     verify:     verifyId,
     logoText:   $('ed-logotext').value,
     logoInvert: $('ed-logo-invert').checked,
-    
-    // Construcción automática de rutas relativas basadas en el texto ingresado
     logo:       buildImagePath($('img-logo').value),
     sig:        buildImagePath($('img-sig').value),
     left:       buildImagePath($('img-left').value),
     right:      buildImagePath($('img-right').value),
   };
 
+  // Guardado de respaldo en LocalStorage
   localStorage.setItem('cert_' + verifyId, JSON.stringify(data));
   localStorage.setItem('cert_payload', JSON.stringify(data));
+
+  // NUEVA LÓGICA: Codificamos todo el JSON de forma segura en Base64 para adjuntarlo a la URL
+  const jsonStr = JSON.stringify(data);
+  const encodedData = btoa(unescape(encodeURIComponent(jsonStr)));
 
   const origin = window.location.origin;
   let path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
   if(!path.endsWith('/')) path += '/';
   
-  const url = origin + path + 'view.html#' + verifyId;
+  // La URL final contiene absolutamente todos los parámetros estructurados
+  const url = origin + path + 'view.html#' + encodedData;
   
   $('link-output').value = url;
   $('link-open').href = url;
