@@ -13,9 +13,11 @@
       background: var(--bg);
       font-family: 'DM Sans', sans-serif;
       min-height: 100vh;
-      display: flex; flex-direction: column;
+      display: flex; 
+      flex-direction: column;
       align-items: center;
-      padding: 2.5rem 1rem 3rem;
+      justify-content: center;
+      padding: 1.5rem 1rem;
     }
 
     .bg-pattern { position: fixed; inset: 0; z-index: 0; }
@@ -25,36 +27,6 @@
       background: radial-gradient(ellipse at center, transparent 20%, rgba(0,0,0,0.82) 100%);
       pointer-events: none;
     }
-
-    .topbar {
-      position: relative; z-index: 10;
-      width: 100%; max-width: 860px;
-      display: flex; align-items: center; justify-content: space-between;
-      margin-bottom: 1.5rem; gap: 1rem; flex-wrap: wrap;
-    }
-    .topbar-label { font-family: 'Bebas Neue', sans-serif; font-size: .95rem; letter-spacing: .14em; color: rgba(255,255,255,0.3); }
-    .btn-group { display: flex; gap: .6rem; flex-wrap: wrap; }
-    .btn {
-      font-family: 'DM Sans', sans-serif; font-size: .68rem; letter-spacing: .14em; text-transform: uppercase; font-weight: 600;
-      padding: .55rem 1.2rem; border-radius: 4px; cursor: pointer; border: none; transition: opacity .2s, transform .15s;
-      text-decoration: none; display: inline-flex; align-items: center; gap: .4rem;
-    }
-    .btn:hover { opacity: .82; transform: translateY(-1px); }
-    .btn-primary { background: #fff; color: #0d1321; }
-    .btn-outline  { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.2); }
-
-    .link-box {
-      position: relative; z-index: 10; width: 100%; max-width: 860px; background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.1); border-radius: 6px; padding: .9rem 1.1rem; display: none;
-      align-items: center; gap: .6rem; margin-bottom: 1.2rem; flex-wrap: wrap;
-    }
-    .link-box.visible { display: flex; }
-    .link-box input {
-      flex: 1; min-width: 200px; background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
-      border-radius: 3px; color: rgba(255,255,255,0.7); font-family: 'DM Sans', sans-serif; font-size: .75rem; padding: .4rem .7rem; outline: none;
-    }
-    .link-notice { position: relative; z-index: 10; width: 100%; max-width: 860px; font-size: .65rem; color: rgba(255,255,255,0.25); letter-spacing: .04em; margin-bottom: .8rem; line-height: 1.6; display: none; }
-    .link-notice.visible { display: block; }
 
     .cert-wrap { position: relative; z-index: 3; width: 100%; max-width: 860px; }
     .cert { background: var(--cert-bg); width: 100%; aspect-ratio: 1.414; position: relative; overflow: hidden; border-radius: 4px; box-shadow: 0 32px 80px rgba(0,0,0,0.6); display: flex; flex-direction: column; }
@@ -71,7 +43,6 @@
     .cert-body { position: relative; z-index: 2; flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding: 2% 6% 1%; text-align: center; }
     .cert-name { font-family:'DM Serif Display', serif; font-size: clamp(1.8rem, 4.8vw, 3.5rem); color: var(--dark); line-height: 1.1; margin-bottom: 0.5%; }
     .cert-completed { font-size: clamp(.6rem, 1.3vw, .85rem); color: var(--muted); font-weight: 400; margin-bottom: 0.5%; }
-    .cert-bottom-space { margin-bottom: 1.5%; }
     .cert-course { font-family:'DM Serif Display', serif; font-size: clamp(1.2rem, 3.2vw, 2.3rem); color: var(--dark); font-weight: 700; line-height: 1.2; margin-bottom: 1.5%; }
     .cert-subtitle { font-size: clamp(.55rem, 1.15vw, .75rem); color: var(--muted); max-width: 90%; line-height: 1.5; margin-bottom: 2%; }
     
@@ -113,7 +84,7 @@
     @media print {
       * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
       html, body { background:white !important; padding:0 !important; margin:0 !important; }
-      .bg-pattern, .vignette, .topbar, .link-box, .link-notice { display:none !important; }
+      .bg-pattern, .vignette { display:none !important; }
       .cert-wrap { max-width:100% !important; width:100% !important; margin:0 !important; padding:0 !important; }
       .cert { box-shadow:none !important; border-radius:0 !important; width:100% !important; aspect-ratio:1.414 !important; page-break-inside:avoid; }
     }
@@ -136,23 +107,6 @@
   </svg>
 </div>
 <div class="vignette"></div>
-
-<div class="topbar" id="topbar">
-  <span class="topbar-label">Vista del Certificado</span>
-  <div class="btn-group">
-    <a class="btn btn-outline" href="certificate.html">← Volver a editar</a>
-    <button class="btn btn-primary" onclick="window.print()">🖨 Imprimir / PDF</button>
-  </div>
-</div>
-
-<div class="link-box" id="link-box">
-  <input type="text" id="link-input" readonly/>
-  <button class="btn btn-primary" onclick="copyLink()">Copiar</button>
-  <button class="btn btn-outline" onclick="closeLinkBox()">✕</button>
-</div>
-<p class="link-notice" id="link-notice">
-  ℹ️ Los datos del certificado han sido validados directamente desde el enlace dinámico.
-</p>
 
 <div class="cert-wrap">
   <div class="cert" id="certificate">
@@ -208,19 +162,16 @@ function loadFromSource(){
   const hashId = location.hash.slice(1).trim();
   if (!hashId) return null;
 
-  // NUEVA LÓGICA: Descodifica los datos directamente de la URL (Permite Modo Incógnito)
   try {
     const decoded = decodeURIComponent(escape(atob(hashId)));
     if (decoded.startsWith('{')) {
       return JSON.parse(decoded);
     }
   } catch(e) {
-    // Respaldo por si se usa un ID de desarrollo estático viejo
     const localData = localStorage.getItem('cert_' + hashId);
     if (localData) return JSON.parse(localData);
   }
 
-  // Respaldo secundario general
   const fallbackData = localStorage.getItem('cert_payload');
   if (fallbackData) return JSON.parse(fallbackData);
 
@@ -241,7 +192,6 @@ function renderCert(data){
   document.title = (data.name || 'Certificado') + ' — Certificado';
   $('page-title').textContent = document.title;
 
-  // Renderizar Logo Superior
   if(data.logo && data.logo.trim() !== ""){
     $('cert-logo-area').innerHTML = `<img src="${data.logo}" alt="Logo" style="filter:${data.logoInvert?'brightness(0)':'none'};" onerror="this.style.display='none'"/>`;
   } else if(data.logoText){
@@ -250,54 +200,33 @@ function renderCert(data){
     $('cert-logo-area').innerHTML = `<span class="logo-text">CERTIFICATE</span>`;
   }
 
-  // Renderizar Firma Central
   if(data.sig && data.sig.trim() !== ""){
     $('cert-sig-img-wrap').innerHTML = `<img src="${data.sig}" alt="Firma" onerror="this.parentNode.innerHTML='<span class=sig-fallback>Digital Signature</span>'"/>`;
   } else {
     $('cert-sig-img-wrap').innerHTML = `<span style="font-size:0.65rem; color:rgba(0,0,0,0.25); letter-spacing:0.1em; text-transform:uppercase;">Digital Signature</span>`;
   }
 
-  // Renderizar QR Izquierdo
   if(data.left && data.left.trim() !== ""){
     $('cert-left-slot').innerHTML = `<img src="${data.left}" alt="QR" onerror="this.style.display='none'"/>`;
   } else {
     $('cert-left-slot').innerHTML = `<div style="width:100%; height:100%; border:1px dashed rgba(0,0,0,0.1); display:flex; align-items:center; justify-content:center; font-size:0.5rem; color:var(--muted);">QR</div>`;
   }
 
-  // Renderizar Insignia Derecha Extra
   if(data.right && data.right.trim() !== ""){
     $('cert-right-slot').innerHTML = `<img src="${data.right}" alt="Sello" onerror="this.style.display='none'"/>`;
   }
-}
-
-function copyLink(){
-  const input = $('link-input');
-  input.select();
-  navigator.clipboard.writeText(input.value).catch(()=>{});
-  const btn = input.nextElementSibling;
-  btn.textContent = '✓ Copiado';
-  setTimeout(()=> btn.textContent = 'Copiar', 2000);
-}
-
-function closeLinkBox(){
-  $('link-box').classList.remove('visible');
-  $('link-notice').classList.remove('visible');
 }
 
 const certData = loadFromSource();
 
 if(certData){
   renderCert(certData);
-  $('link-input').value = window.location.href;
-  $('link-box').classList.add('visible');
-  $('link-notice').classList.add('visible');
 } else {
   document.querySelector('.cert-wrap').innerHTML =
     `<div class="empty-state">
       ⚠️ No se encontraron datos válidos para este certificado.<br>
       <a href="certificate.html">← Abrir el Editor de Certificados</a>
     </div>`;
-  $('topbar').style.display = 'none';
 }
 </script>
 </body>
