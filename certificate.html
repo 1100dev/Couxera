@@ -14,13 +14,8 @@
     
     .form-group { margin-bottom: 1.2rem; display: flex; flex-direction: column; gap: .4rem; }
     label { font-size: .8rem; color: rgba(255,255,255,0.6); font-weight: 500; text-transform: uppercase; letter-spacing: .05em; }
-    
-    input[type="text"], textarea, select { 
-      background: #1a1a1a; border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; 
-      padding: .6rem .8rem; color: #fff; font-family: inherit; font-size: .9rem; outline: none; transition: border .2s; 
-    }
-    input[type="text"]:focus, textarea:focus, select:focus { border-color: #fff; }
-    select { cursor: pointer; appearance: none; background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='10' fill='white'><polygon points='0,3 10,3 5,8'/></svg>"); background-repeat: no-repeat; background-position: right .8rem center; padding-right: 2rem; }
+    input[type="text"], textarea { background: #1a1a1a; border: 1px solid rgba(255,255,255,0.15); border-radius: 4px; padding: .6rem .8rem; color: #fff; font-family: inherit; font-size: .9rem; outline: none; transition: border .2s; }
+    input[type="text"]:focus, textarea:focus { border-color: #fff; }
     
     .row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
     .checkbox-group { display: flex; align-items: center; gap: .5rem; margin-top: .5rem; }
@@ -34,6 +29,8 @@
     .btn-small { padding: .4rem .8rem; font-size: .75rem; border-radius: 3px; cursor: pointer; text-decoration: none; font-weight: 500; }
     .btn-small.primary { background: #fff; color: #000; border: none; }
     .btn-small.outline { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.2); }
+    
+    .prefix-info { font-size: 0.7rem; color: rgba(255,255,255,0.3); margin-top: -0.2rem; }
   </style>
 </head>
 <body>
@@ -79,7 +76,7 @@
   </div>
 
   <div class="form-group">
-    <label>Texto alternativo del Logo (Si no seleccionas imagen)</label>
+    <label>Texto alternativo del Logo (Si no usas imagen)</label>
     <input type="text" id="ed-logotext" placeholder="Ej. COURSERA"/>
     <div class="checkbox-group">
       <input type="checkbox" id="ed-logo-invert"/>
@@ -89,39 +86,27 @@
 
   <div class="row">
     <div class="form-group">
-      <label>Imagen del Logo (Superior)</label>
-      <select id="sel-logo">
-        <option value="">-- Sin imagen / Usar Texto --</option>
-        <option value="images/logo.png">logo.png</option>
-        <option value="images/logo-dark.png">logo-dark.png</option>
-      </select>
+      <label>Archivo del Logo (Superior)</label>
+      <input type="text" id="img-logo" placeholder="Ej. logo.png"/>
+      <span class="prefix-info">Se enrutará automáticamente a: images/</span>
     </div>
     <div class="form-group">
-      <label>Firma Digitalizada (Centro)</label>
-      <select id="sel-sig">
-        <option value="">-- Sin firma por defecto --</option>
-        <option value="images/firma.png">firma.png</option>
-        <option value="images/firma-2.png">firma-2.png</option>
-      </select>
+      <label>Archivo de la Firma (Centro)</label>
+      <input type="text" id="img-sig" placeholder="Ej. firma.png"/>
+      <span class="prefix-info">Se enrutará automáticamente a: images/</span>
     </div>
   </div>
 
   <div class="row">
     <div class="form-group">
-      <label>Código QR (Inferior Izquierdo)</label>
-      <select id="sel-left">
-        <option value="">-- Sin QR --</option>
-        <option value="images/qr.png">qr.png</option>
-        <option value="images/qr-validacion.png">qr-validacion.png</option>
-      </select>
+      <label>Archivo del QR (Inferior Izquierdo)</label>
+      <input type="text" id="img-left" placeholder="Ej. qr.png"/>
+      <span class="prefix-info">Se enrutará automáticamente a: images/</span>
     </div>
     <div class="form-group">
-      <label>Sello / Insignia Extra (Opcional)</label>
-      <select id="sel-right">
-        <option value="">-- Ninguno --</option>
-        <option value="images/sello.png">sello.png</option>
-        <option value="images/badge.png">badge.png</option>
-      </select>
+      <label>Archivo Sello Extra (Opcional)</label>
+      <input type="text" id="img-right" placeholder="Ej. sello.png"/>
+      <span class="prefix-info">Se enrutará automáticamente a: images/</span>
     </div>
   </div>
 
@@ -140,10 +125,18 @@
 <script>
 function $(id){ return document.getElementById(id); }
 
+// Función auxiliar para construir la ruta correcta solo si el usuario escribió algo
+function buildImagePath(val) {
+  const cleanVal = val.trim();
+  if (!cleanVal) return '';
+  // Si por error ya escribiste "images/", lo dejamos igual; si no, lo añadimos por delante
+  if (cleanVal.startsWith('images/')) return cleanVal;
+  return 'images/' + cleanVal;
+}
+
 function generateLink(){
   const verifyId = $('ed-verify').value.trim() || 'CERT-PREVIEW';
   
-  // Tomamos directamente los values de los selects con las rutas preestablecidas
   const data = {
     name:       $('ed-name').value,
     course:     $('ed-course').value,
@@ -154,10 +147,12 @@ function generateLink(){
     verify:     verifyId,
     logoText:   $('ed-logotext').value,
     logoInvert: $('ed-logo-invert').checked,
-    logo:       $('sel-logo').value,
-    sig:        $('sel-sig').value,
-    left:       $('sel-left').value,
-    right:      $('sel-right').value,
+    
+    // Construcción automática de rutas relativas basadas en el texto ingresado
+    logo:       buildImagePath($('img-logo').value),
+    sig:        buildImagePath($('img-sig').value),
+    left:       buildImagePath($('img-left').value),
+    right:      buildImagePath($('img-right').value),
   };
 
   localStorage.setItem('cert_' + verifyId, JSON.stringify(data));
