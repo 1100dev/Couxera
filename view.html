@@ -308,3 +308,132 @@
       <div class="cert-meta-block">
         <div><span class="meta-label">Duration:</span> <span id="c-hours"></span></div>
         <div><span class="meta-label">Certification ID:</span> <span id="c-verify-id"></span></div>
+      </div>
+
+      <div class="cert-signature-container">
+        <div id="cert-sig-img-wrap"></div>
+        <div class="cert-sig-line"></div>
+        <p class="cert-sig-name" id="c-signame"></p>
+        <p class="cert-sig-role" id="c-sigrole"></p>
+      </div>
+    </div>
+
+    <div class="cert-footer">
+      <div class="cert-left-img" id="cert-left-slot"></div>
+      
+      <p class="cert-verify">
+        Verify this certification at:<br>
+        <span id="c-verify-url"></span>
+      </p>
+      
+      <div class="cert-right-img" id="cert-right-slot">
+        <div class="badge-star-ui">
+          <svg viewBox="0 0 24 24" fill="none">
+            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+          </svg>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+function $(id){ return document.getElementById(id); }
+
+function loadFromSource(){
+  const hashId = location.hash.slice(1);
+  if (hashId) {
+    const localData = localStorage.getItem('cert_' + hashId);
+    if (localData) {
+      return { data: JSON.parse(localData), isPublicView: true };
+    }
+  }
+  const fallbackData = localStorage.getItem('cert_payload');
+  if (fallbackData) {
+    return { data: JSON.parse(fallbackData), isPublicView: false };
+  }
+  return null;
+}
+
+function renderCert(data){
+  $('c-name').textContent     = data.name     || '';
+  $('c-course').textContent   = data.course   || '';
+  $('c-subtitle').textContent = data.subtitle || '';
+  $('c-hours').textContent    = data.hours    || '';
+  $('c-verify-id').textContent = data.verify   || 'N/A';
+  $('c-signame').textContent  = data.signame  || '';
+  $('c-sigrole').textContent  = data.sigrole  || '';
+  $('c-verify-url').textContent = window.location.href.split('#')[0] + '#' + (data.verify || '');
+  
+  document.title = (data.name || 'Certificado') + ' — Certificado';
+  $('page-title').textContent = document.title;
+
+  // Logo Dinámico (Estilo Coursera)
+  if(data.logo){
+    $('cert-logo-area').innerHTML =
+      `<img src="${data.logo}" alt="Logo" style="filter:${data.logoInvert?'brightness(0)':'none'};"/>`;
+  } else if(data.logoText){
+    $('cert-logo-area').innerHTML = `<span class="logo-text">${data.logoText}</span>`;
+  } else {
+    $('cert-logo-area').innerHTML = `<span class="logo-text">CERTIFICATE</span>`;
+  }
+
+  // Carga de la firma digital centralizada
+  if(data.sig){
+    $('cert-sig-img-wrap').innerHTML =
+      `<img src="${data.sig}" alt="Firma Digitalizada"/>`;
+  } else {
+    // Marcador por defecto elegante si no hay firma cargada
+    $('cert-sig-img-wrap').innerHTML = `<span style="font-size:0.65rem; color:rgba(0,0,0,0.25); letter-spacing:0.1em; text-transform:uppercase;">Digital Signature</span>`;
+  }
+
+  // Slot izquierdo del footer
+  if(data.left){
+    $('cert-left-slot').innerHTML = `<img src="${data.left}" alt=""/>`;
+  }
+
+  // Slot derecho del footer
+  if(data.right){
+    $('cert-right-slot').innerHTML = `<img src="${data.right}" alt=""/>`;
+  }
+}
+
+function copyLink(){
+  const input = $('link-input');
+  input.select();
+  navigator.clipboard.writeText(input.value).catch(()=>{});
+  const btn = input.nextElementSibling;
+  btn.textContent = '✓ Copiado';
+  setTimeout(()=> btn.textContent = 'Copiar', 2000);
+}
+
+function closeLinkBox(){
+  $('link-box').classList.remove('visible');
+  $('link-notice').classList.remove('visible');
+}
+
+// Inicialización inteligente de enrutamiento por hash
+const result = loadFromSource();
+if(result){
+  renderCert(result.data);
+  
+  if (result.isPublicView) {
+    const topBar = document.querySelector('.topbar');
+    if(topBar) topBar.style.display = 'none';
+    $('link-box').classList.remove('visible');
+    $('link-notice').classList.remove('visible');
+  } else {
+    $('link-input').value = location.href;
+    $('link-box').classList.add('visible');
+    $('link-notice').classList.add('visible');
+  }
+} else {
+  document.querySelector('.cert-wrap').innerHTML =
+    `<div class="empty-state">
+      No hay datos de certificado válidos.<br>
+      <a href="certificate.html" style="color:rgba(255,255,255,0.4);text-decoration:underline;">Ir al editor →</a>
+    </div>`;
+}
+</script>
+</body>
+</html>
