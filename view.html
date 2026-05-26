@@ -18,7 +18,7 @@
       padding: 2.5rem 1rem 3rem;
     }
 
-    /* BG General de la aplicación */
+    /* BG General */
     .bg-pattern { position: fixed; inset: 0; z-index: 0; }
     .bg-pattern svg { width:100%; height:100%; }
     .vignette {
@@ -27,7 +27,7 @@
       pointer-events: none;
     }
 
-    /* Top bar (Control Admin) */
+    /* Top bar */
     .topbar {
       position: relative; z-index: 10;
       width: 100%; max-width: 860px;
@@ -100,7 +100,7 @@
     }
     .link-notice.visible { display: block; }
 
-    /* Cert wrap responsivo */
+    /* Certificado Wrapper */
     .cert-wrap { position: relative; z-index: 3; width: 100%; max-width: 860px; }
 
     .cert {
@@ -114,7 +114,7 @@
       display: flex; flex-direction: column;
     }
     
-    /* Imagen de fondo estática desde tu directorio local */
+    /* Configuración del fondo estático */
     .cert-bg-image {
       position: absolute;
       inset: 0;
@@ -135,7 +135,7 @@
       border: .5px solid rgba(13,19,33,0.06);
     }
 
-    /* header - Logo alineado AL CENTRO */
+    /* Logo alineado AL CENTRO */
     .cert-header {
       position: relative; z-index: 2;
       padding: 4% 4% 0;
@@ -155,7 +155,7 @@
       font-size: clamp(1.3rem, 3.5vw, 2.2rem); letter-spacing: .06em;
     }
 
-    /* body principal */
+    /* Body */
     .cert-body {
       position: relative; z-index: 2; flex: 1;
       display: flex; flex-direction: column;
@@ -169,7 +169,6 @@
     .cert-course { font-family:'DM Serif Display', serif; font-size: clamp(1.2rem, 3.2vw, 2.3rem); color: var(--dark); font-weight: 700; line-height: 1.2; margin-bottom: 1.5%; }
     .cert-subtitle { font-size: clamp(.55rem, 1.15vw, .75rem); color: var(--muted); max-width: 90%; line-height: 1.5; margin-bottom: 2%; }
     
-    /* Bloque de Horas e Identificación */
     .cert-meta-block {
       margin-bottom: 3.5%;
       font-size: clamp(.52rem, 1.1vw, .72rem);
@@ -178,7 +177,7 @@
     }
     .meta-label { color: var(--muted); }
 
-    /* Firma digitalizada e información centralizada arriba */
+    /* Firma digitalizada centralizada */
     .cert-signature-container {
       display: flex;
       flex-direction: column;
@@ -202,14 +201,13 @@
     .cert-sig-name { font-family: 'DM Serif Display', serif; font-size: clamp(1rem, 2.2vw, 1.5rem); color: var(--dark); font-weight: 700; line-height: 1.2; }
     .cert-sig-role { font-size: clamp(.55rem, 1.2vw, .78rem); color: var(--muted); margin-top: 0.1rem; font-weight: 400; }
 
-    /* Footer estructurado */
+    /* Footer */
     .cert-footer {
       position: relative; z-index: 2;
       display: flex; align-items: center; justify-content: space-between;
       padding: 0 5% 4%;
     }
     
-    /* Imagen inferior izquierda para el QR */
     .cert-left-img {
       width: clamp(50px, 9vw, 75px); aspect-ratio: 1; flex-shrink: 0;
       display: flex; align-items: center; justify-content: center; overflow: hidden;
@@ -229,14 +227,12 @@
     }
     .cert-right-img img { width: 100%; height: 100%; object-fit: contain; display: block; }
     
-    /* Insignia de Estrella por defecto */
     .badge-star-ui {
       width: 100%; height: 100%; border-radius: 50%; border: 1.5px solid var(--dark);
       display: flex; align-items: center; justify-content: center; position: relative;
     }
     .badge-star-ui svg { width: 42%; fill: none; stroke: var(--dark); stroke-width: 2; }
 
-    /* empty state */
     .empty-state {
       position: relative; z-index: 3;
       text-align: center; color: rgba(255,255,255,0.2);
@@ -244,7 +240,6 @@
       letter-spacing: .06em; line-height: 2;
     }
 
-    /* Ajustes adaptativos para pantallas móviles */
     @media (max-width: 650px) {
       .cert { aspect-ratio: unset; min-height: 600px; padding-top: 1rem; }
       .cert-frame { inset: 8px; }
@@ -299,7 +294,7 @@
 <div class="cert-wrap">
   <div class="cert" id="certificate">
     
-    <img src="./images/fondo.svg" class="cert-bg-image" alt="Fondo del Certificado"/>
+    <img src="/images/fondo.svg" class="cert-bg-image" alt="Fondo del Certificado"/>
     
     <div class="cert-frame"></div>
 
@@ -352,21 +347,13 @@ function loadFromSource(){
   const hashId = location.hash.slice(1);
   if (!hashId) return null;
 
-  // 1. Intentar buscar por ID en LocalStorage
+  // Intentar buscar los datos por ID en LocalStorage
   const localData = localStorage.getItem('cert_' + hashId);
   if (localData) {
     return { data: JSON.parse(localData), isPublicView: true };
   }
 
-  // 2. Intentar decodificar si viaja el payload completo comprimido
-  try {
-    const decoded = JSON.parse(decodeURIComponent(atob(hashId)));
-    return { data: decoded, isPublicView: true };
-  } catch (e) {
-    console.error("Error decodificando hash:", e);
-  }
-
-  // 3. Fallback al borrador actual
+  // Fallback al borrador actual
   const fallbackData = localStorage.getItem('cert_payload');
   if (fallbackData) {
     return { data: JSON.parse(fallbackData), isPublicView: false };
@@ -387,7 +374,6 @@ function renderCert(data){
   document.title = (data.name || 'Certificado') + ' — Certificado';
   $('page-title').textContent = document.title;
 
-  // Logo Dinámico Centrado
   if(data.logo){
     $('cert-logo-area').innerHTML = `<img src="${data.logo}" alt="Logo" style="filter:${data.logoInvert?'brightness(0)':'none'};"/>`;
   } else if(data.logoText){
@@ -396,21 +382,18 @@ function renderCert(data){
     $('cert-logo-area').innerHTML = `<span class="logo-text">CERTIFICATE</span>`;
   }
 
-  // Carga de la firma digitalizada
   if(data.sig){
     $('cert-sig-img-wrap').innerHTML = `<img src="${data.sig}" alt="Firma"/>`;
   } else {
     $('cert-sig-img-wrap').innerHTML = `<span style="font-size:0.65rem; color:rgba(0,0,0,0.25); letter-spacing:0.1em; text-transform:uppercase;">Digital Signature</span>`;
   }
 
-  // Código QR (Slot izquierdo)
   if(data.left){
     $('cert-left-slot').innerHTML = `<img src="${data.left}" alt="QR"/>`;
   } else {
     $('cert-left-slot').innerHTML = `<div style="width:100%; height:100%; border:1px dashed rgba(0,0,0,0.1); display:flex; align-items:center; justify-content:center; font-size:0.5rem; color:var(--muted);">QR</div>`;
   }
 
-  // Slot derecho del footer
   if(data.right){
     $('cert-right-slot').innerHTML = `<img src="${data.right}" alt=""/>`;
   }
