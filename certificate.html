@@ -29,740 +29,256 @@
     .bg-pattern svg { width:100%; height:100%; }
     .vignette {
       position: fixed; inset: 0; z-index: 1;
-      background: radial-gradient(ellipse at center, transparent 20%, rgba(0,0,0,0.82) 100%);
+      background: radial-gradient(ellipse at center, transparent 20%, rgba(0,0,0,0.7) 100%);
       pointer-events: none;
     }
 
-    /* ── EDITOR ── */
-    .editor-panel {
-      position: relative; z-index: 3;
-      background: rgba(255,255,255,0.04);
-      border: 1px solid rgba(255,255,255,0.09);
-      border-radius: 8px;
-      padding: 1.4rem 1.6rem 1.6rem;
-      width: 100%; max-width: 860px;
-      margin-bottom: 1.5rem;
-    }
-    .editor-panel h2 {
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: 1rem;
-      letter-spacing: .14em;
-      color: rgba(255,255,255,0.4);
-      margin-bottom: 1rem;
-    }
-    .editor-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
-      gap: .8rem 1.2rem;
-    }
-    .field label {
-      display: block;
-      font-size: .62rem;
-      letter-spacing: .16em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.28);
-      margin-bottom: .3rem;
-      font-weight: 500;
-    }
-    .field input {
-      width: 100%;
-      background: rgba(255,255,255,0.07);
-      border: 1px solid rgba(255,255,255,0.1);
-      border-radius: 4px;
-      color: #fff;
-      font-family: 'DM Sans', sans-serif;
-      font-size: .83rem;
-      padding: .48rem .7rem;
-      outline: none;
-      transition: border .2s;
-    }
-    .field input:focus { border-color: rgba(255,255,255,0.4); }
+    /* Form & Container */
+    .container { position: relative; z-index: 2; width: 100%; max-width: 700px; background: #121212; border: 1px solid rgba(255,255,255,0.08); padding: 2.5rem; border-radius: 12px; box-shadow: 0 20px 40px rgba(0,0,0,0.5); }
+    h1 { font-family: 'Bebas Neue', sans-serif; font-size: 2.5rem; color: #fff; letter-spacing: 1px; margin-bottom: 1.5rem; border-bottom: 1px solid rgba(255,255,255,0.1); padding-bottom: 0.5rem; }
+    
+    .form-group { margin-bottom: 1.25rem; }
+    .form-row { display: flex; gap: 1rem; }
+    .form-row .form-group { flex: 1; }
+    
+    label { display: block; color: #a0a0a0; font-size: 0.85rem; font-weight: 500; margin-bottom: 0.5rem; text-transform: uppercase; letter-spacing: 0.5px; }
+    input[type="text"], textarea { width: 100%; background: #1a1a1a; border: 1px solid rgba(255,255,255,0.12); border-radius: 6px; padding: 0.75rem; color: #fff; font-family: inherit; font-size: 0.95rem; transition: all 0.2s ease; }
+    input[type="text"]:focus, textarea:focus { outline: none; border-color: #fff; background: #222; }
+    textarea { height: 70px; resize: none; }
+    
+    .checkbox-group { display: flex; align-items: center; gap: 0.5rem; margin-top: 0.5rem; }
+    .checkbox-group input { cursor: pointer; }
+    .checkbox-group label { margin-bottom: 0; text-transform: none; cursor: pointer; }
 
-    /* upload fields */
-    .upload-zone {
-      position: relative;
-      width: 100%;
-      cursor: pointer;
-    }
-    .upload-zone input[type="file"] {
-      position: absolute; inset: 0;
-      opacity: 0; cursor: pointer;
-      font-size: 0;
-    }
-    .upload-btn {
-      display: flex;
-      align-items: center;
-      gap: .5rem;
-      background: rgba(255,255,255,0.07);
-      border: 1px dashed rgba(255,255,255,0.18);
-      border-radius: 4px;
-      color: rgba(255,255,255,0.45);
-      font-family: 'DM Sans', sans-serif;
-      font-size: .78rem;
-      padding: .48rem .7rem;
-      width: 100%;
-      pointer-events: none;
-      transition: border .2s, color .2s;
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .upload-zone:hover .upload-btn {
-      border-color: rgba(255,255,255,0.4);
-      color: rgba(255,255,255,0.8);
-    }
-    .upload-btn.has-file {
-      border-style: solid;
-      border-color: rgba(255,255,255,0.25);
-      color: rgba(255,255,255,0.75);
-    }
-    .upload-icon { font-size: 1rem; flex-shrink: 0; }
+    /* Custom File Input button style */
+    .file-input-wrapper { position: relative; margin-top: 0.25rem; }
+    .file-label { display: block; background: #222; border: 1px dashed rgba(255,255,255,0.2); padding: 0.75rem; text-align: center; border-radius: 6px; cursor: pointer; color: #ccc; font-size: 0.9rem; transition: background 0.2s; }
+    .file-label:hover { background: #2a2a2a; color: #fff; }
+    .file-input-wrapper input[type="file"] { position: absolute; left: 0; top: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
+    .file-preview { margin-top: 0.5rem; font-size: 0.8rem; color: #888; display: flex; align-items: center; gap: 0.5rem; }
+    .file-preview img { max-height: 30px; border-radius: 4px; background: #fff; padding: 2px; }
 
-    .section-sep {
-      grid-column: 1/-1;
-      border: none;
-      border-top: 1px solid rgba(255,255,255,0.07);
-      margin: .3rem 0 .1rem;
-    }
-    .section-label {
-      grid-column: 1/-1;
-      font-size: .6rem;
-      letter-spacing: .2em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.2);
-      margin-bottom: -.2rem;
-    }
+    button.btn-primary { width: 100%; background: #ffffff; color: #000; border: none; padding: 0.9rem; border-radius: 6px; font-weight: 600; font-size: 1rem; cursor: pointer; margin-top: 1.5rem; transition: opacity 0.2s; }
+    button.btn-primary:hover { opacity: 0.9; }
 
-    .btn-row {
-      display: flex;
-      gap: .7rem;
-      flex-wrap: wrap;
-      margin-top: 1rem;
-    }
-    .btn {
-      font-family: 'DM Sans', sans-serif;
-      font-size: .7rem;
-      letter-spacing: .14em;
-      text-transform: uppercase;
-      font-weight: 600;
-      padding: .58rem 1.3rem;
-      border-radius: 4px;
-      cursor: pointer;
-      border: none;
-      transition: opacity .2s, transform .15s;
-    }
-    .btn:hover { opacity: .82; transform: translateY(-1px); }
-    .btn-primary { background: #fff; color: #0d1321; }
-    .btn-outline  { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.2); }
-    .btn-green    { background: #22c55e; color: #fff; }
-
-    /* ── CERT WRAPPER ── */
-    .cert-wrap {
-      position: relative; z-index: 3;
-      width: 100%; max-width: 860px;
-    }
-
-    /* ── CERT ── */
-    .cert {
-      background: var(--cert-bg);
-      width: 100%;
-      aspect-ratio: 1.414;
-      position: relative;
-      overflow: hidden;
-      border-radius: 2px;
-      box-shadow: 0 32px 80px rgba(0,0,0,0.6);
-      display: flex;
-      flex-direction: column;
-    }
-    .cert-bg-svg { position: absolute; inset: 0; z-index: 0; }
-    .cert-bg-svg svg { width:100%; height:100%; }
-    .cert-frame {
-      position: absolute; inset: 10px; z-index: 1;
-      border: 1.5px solid rgba(13,19,33,0.15);
-      pointer-events: none;
-    }
-    .cert-frame::before {
-      content:''; position: absolute; inset: 5px;
-      border: .5px solid rgba(13,19,33,0.08);
-    }
-
-    /* header */
-    .cert-header {
-      position: relative; z-index: 2;
-      background: var(--dark);
-      padding: 1% 4%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      min-height: 13%;
-    }
-    #cert-logo-area {
-      display: flex; align-items: center; justify-content: center;
-      /* Contenedor con tamaño fijo para que SVGs sin width/height declarado
-         tengan referencia y se rendericen correctamente */
-      width: 280px;
-      height: 60px;
-      flex-shrink: 0;
-    }
-    #cert-logo-area img {
-      display: block;
-      /* Dimensiones explícitas: crítico para SVGs que no declaran
-         width/height en el elemento raíz */
-      width: 100%;
-      height: 100%;
-      max-width: 280px;
-      max-height: 60px;
-      object-fit: contain;
-      object-position: center;
-    }
-    #cert-logo-area .logo-text {
-      color: #fff;
-      font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(1.1rem, 3.5vw, 2rem);
-      letter-spacing: .06em;
-    }
-    #cert-logo-area .logo-ph {
-      font-family: 'DM Sans', sans-serif;
-      font-weight: 300;
-      font-size: clamp(.55rem, 1.3vw, .75rem);
-      letter-spacing: .2em;
-      text-transform: uppercase;
-      color: rgba(255,255,255,0.25);
-      border: 1px dashed rgba(255,255,255,0.12);
-      padding: .4rem 1.1rem;
-    }
-
-    /* body */
-    .cert-body {
-      position: relative; z-index: 2;
-      flex: 1;
-      display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      padding: 1.5% 8% 0; gap: .4%;
-      text-align: center;
-    }
-    .cert-tag {
-      font-size: clamp(.52rem, 1.1vw, .72rem);
-      letter-spacing: .2em; text-transform: uppercase;
-      color: var(--muted);
-    }
-    .cert-name {
-      font-family: 'DM Serif Display', serif;
-      font-size: clamp(1.5rem, 5vw, 3.4rem);
-      color: var(--dark); line-height: 1.1;
-    }
-    .cert-completed {
-      font-size: clamp(.58rem, 1.3vw, .82rem);
-      color: var(--muted);
-    }
-    .cert-course {
-      font-family: 'DM Serif Display', serif;
-      font-size: clamp(.95rem, 2.8vw, 2rem);
-      color: var(--dark); font-weight: 700; line-height: 1.2;
-    }
-    .cert-subtitle {
-      font-size: clamp(.58rem, 1.2vw, .78rem);
-      color: var(--muted);
-    }
-    .cert-hours {
-      font-size: clamp(.52rem, 1vw, .68rem);
-      color: rgba(90,90,106,.6);
-    }
-
-    /* footer */
-    .cert-footer {
-      position: relative; z-index: 2;
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      padding: 3% 5% 2.5%;
-      gap: 1%;
-    }
-
-    /* LEFT image slot (QR / foto) */
-    .cert-left-img {
-      width: clamp(52px, 9.5%, 82px);
-      aspect-ratio: 1;
-      flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      overflow: hidden;
-    }
-    .cert-left-img img {
-      width: 100%; height: 100%; object-fit: contain; display: block;
-    }
-    .cert-left-img .img-ph {
-      width: 100%; height: 100%;
-      background: var(--dark);
-      display: flex; align-items: center; justify-content: center;
-      font-size: clamp(.3rem,.7vw,.45rem);
-      color: rgba(255,255,255,.25);
-      letter-spacing: .06em; text-transform: uppercase;
-      text-align: center; line-height: 1.5;
-    }
-
-    /* signature */
-    .cert-sig { text-align: center; flex: 1; min-width: 0; }
-    .cert-sig-line {
-      width: clamp(70px,18%,150px); height: 1px;
-      background: var(--dark); margin: 0 auto .3rem;
-    }
-    .cert-sig-name {
-      font-weight: 600;
-      font-size: clamp(.52rem, 1.2vw, .76rem);
-      color: var(--dark);
-    }
-    .cert-sig-role {
-      font-size: clamp(.44rem, .95vw, .62rem);
-      color: var(--muted);
-    }
-
-    /* RIGHT image slot (sello / logo) */
-    .cert-right-img {
-      width: clamp(52px, 9.5%, 82px);
-      aspect-ratio: 1;
-      flex-shrink: 0;
-      display: flex; align-items: center; justify-content: center;
-      overflow: hidden;
-    }
-    .cert-right-img img {
-      width: 100%; height: 100%; object-fit: contain; display: block;
-    }
-    .cert-right-img .img-ph {
-      width: 100%; height: 100%;
-      border-radius: 50%;
-      border: 3px solid var(--dark);
-      display: flex; align-items: center; justify-content: center;
-      position: relative;
-    }
-    .cert-right-img .img-ph::before {
-      content:''; position: absolute; inset: 4px;
-      border-radius: 50%; border: 1px solid var(--dark);
-    }
-    .cert-right-img .img-ph svg { width: 38%; }
-
-    /* verify */
-    .cert-verify {
-      position: absolute; bottom: .7%; left: 0; right: 0; z-index: 2;
-      text-align: center;
-      font-size: clamp(.34rem, .75vw, .52rem);
-      color: rgba(90,90,106,.45);
-    }
-
-    @media print {
-      * { -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }
-      html, body { background: white !important; padding: 0 !important; margin: 0 !important; }
-      .bg-pattern, .vignette, .editor-panel { display: none !important; }
-      .cert-wrap { max-width: 100% !important; width: 100% !important; margin: 0 !important; padding: 0 !important; }
-      .cert { box-shadow: none !important; border-radius: 0 !important; width: 100% !important; aspect-ratio: 1.414 !important; page-break-inside: avoid; }
-      .cert-header { background: #0d1321 !important; }
-    }
-    @media (max-width: 600px) {
-      .cert { aspect-ratio: unset; min-height: 520px; }
-    }
+    /* Result Box */
+    .result-box { display: none; margin-top: 2rem; padding: 1.5rem; background: #161616; border: 1px solid rgba(255,255,255,0.15); border-radius: 8px; animation: fadeIn 0.3s ease forwards; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    .result-title { font-family: 'Bebas Neue', sans-serif; font-size: 1.5rem; color: #fff; margin-bottom: 0.75rem; letter-spacing: 0.5px; }
+    .input-copy-group { display: flex; gap: 0.5rem; margin-bottom: 1rem; }
+    .input-copy-group input { flex: 1; background: #0c0c0c; border: 1px solid rgba(255,255,255,0.2); padding: 0.75rem; border-radius: 6px; color: #888; font-size: 0.85rem; }
+    .btn-sec { background: #2a2a2a; color: #fff; border: 1px solid rgba(255,255,255,0.1); padding: 0.75rem 1.2rem; border-radius: 6px; cursor: pointer; font-size: 0.9rem; font-weight: 500; white-space: nowrap; }
+    .btn-sec:hover { background: #3a3a3a; }
+    .btn-action-view { display: block; text-align: center; background: #fff; color: #000; padding: 0.8rem; border-radius: 6px; font-weight: 600; text-decoration: none; font-size: 0.95rem; }
+    .btn-action-view:hover { opacity: 0.9; }
   </style>
 </head>
 <body>
 
-<!-- BG pattern -->
-<div class="bg-pattern">
-  <svg viewBox="0 0 600 600" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-    <defs>
-      <pattern id="hexbg" x="0" y="0" width="120" height="104" patternUnits="userSpaceOnUse">
-        <polygon points="60,2 118,32 118,72 60,102 2,72 2,32" fill="none" stroke="rgba(255,255,255,0.055)" stroke-width="0.8"/>
-        <line x1="60" y1="2"  x2="60" y2="52"  stroke="rgba(255,255,255,0.04)" stroke-width="0.6"/>
-        <line x1="2"  y1="32" x2="60" y2="52"  stroke="rgba(255,255,255,0.04)" stroke-width="0.6"/>
-        <line x1="118" y1="32" x2="60" y2="52" stroke="rgba(255,255,255,0.04)" stroke-width="0.6"/>
-        <polygon points="60,54 118,84 118,124 60,154 2,124 2,84" fill="none" stroke="rgba(255,255,255,0.055)" stroke-width="0.8"/>
-        <line x1="60" y1="54"  x2="60" y2="104" stroke="rgba(255,255,255,0.04)" stroke-width="0.6"/>
-        <line x1="2"  y1="84"  x2="60" y2="104" stroke="rgba(255,255,255,0.04)" stroke-width="0.6"/>
-        <line x1="118" y1="84" x2="60" y2="104" stroke="rgba(255,255,255,0.04)" stroke-width="0.6"/>
-      </pattern>
-    </defs>
-    <rect width="100%" height="100%" fill="#090909"/>
-    <rect width="100%" height="100%" fill="url(#hexbg)"/>
-  </svg>
-</div>
-<div class="vignette"></div>
-
-<!-- ── EDITOR ── -->
-<div class="editor-panel">
-  <h2>✎ Editar Certificado</h2>
-  <div class="editor-grid">
-
-    <!-- Texto -->
-    <div class="field">
-      <label>Nombre del Estudiante</label>
-      <input id="ed-name" type="text" value="Kriti Rai"/>
-    </div>
-    <div class="field">
-      <label>Nombre del Curso</label>
-      <input id="ed-course" type="text" value="Legacy Responsive Web Design V8"/>
-    </div>
-    <div class="field">
-      <label>Subtítulo / Tipo de certificación</label>
-      <input id="ed-subtitle" type="text" value="Developer Certification on April 10, 2024"/>
-    </div>
-    <div class="field">
-      <label>Horas de trabajo</label>
-      <input id="ed-hours" type="text" value="representing approximately 300 hours of work"/>
-    </div>
-    <div class="field">
-      <label>Nombre del Firmante</label>
-      <input id="ed-signame" type="text" value="Quincy Larson"/>
-    </div>
-    <div class="field">
-      <label>Cargo del Firmante</label>
-      <input id="ed-sigrole" type="text" value="Executive Director, freeCodeCamp.org"/>
-    </div>
-    <div class="field" style="grid-column:1/-1">
-      <label>URL de verificación</label>
-      <input id="ed-verify" type="text" value="https://freecodecamp.org/certification/..."/>
-    </div>
-
-    <hr class="section-sep"/>
-    <p class="section-label">Imágenes</p>
-
-    <!-- Logo cabecera -->
-    <div class="field">
-      <label>Logo (cabecera) — archivo local</label>
-      <div class="upload-zone" id="zone-logo">
-        <input type="file" id="file-logo" accept="image/*"/>
-        <div class="upload-btn" id="btn-logo"><span class="upload-icon">🖼</span> Subir logo…</div>
-      </div>
-    </div>
-    <div class="field">
-      <label>O texto del logo (si no hay imagen)</label>
-      <input id="ed-logotext" type="text" value="freeCodeCamp(🔥)"/>
-    </div>
-    <div class="field" style="display:flex;align-items:center;gap:.6rem;padding-top:1.2rem;">
-      <input type="checkbox" id="ed-logo-invert" style="accent-color:#fff;width:15px;height:15px;cursor:pointer;flex-shrink:0;"/>
-      <label for="ed-logo-invert" style="font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(255,255,255,.28);font-weight:500;cursor:pointer;margin:0;">
-        Invertir colores del logo<br>
-        <span style="font-weight:300;letter-spacing:.04em;text-transform:none;font-size:.58rem;color:rgba(255,255,255,.18);">Activa si tu logo es oscuro/negro</span>
-      </label>
-    </div>
-
-    <!-- Imagen izquierda (QR / foto) -->
-    <div class="field">
-      <label>Imagen inferior izquierda (QR / foto)</label>
-      <div class="upload-zone" id="zone-left">
-        <input type="file" id="file-left" accept="image/*"/>
-        <div class="upload-btn" id="btn-left"><span class="upload-icon">📷</span> Subir imagen…</div>
-      </div>
-    </div>
-
-    <!-- Imagen derecha (sello / escudo) -->
-    <div class="field">
-      <label>Imagen inferior derecha (sello / escudo)</label>
-      <div class="upload-zone" id="zone-right">
-        <input type="file" id="file-right" accept="image/*"/>
-        <div class="upload-btn" id="btn-right"><span class="upload-icon">🏅</span> Subir imagen…</div>
-      </div>
-    </div>
-
-    <!-- Firma del director -->
-    <div class="field">
-      <label>Firma del Director (imagen)</label>
-      <div class="upload-zone" id="zone-sig">
-        <input type="file" id="file-sig" accept="image/*"/>
-        <div class="upload-btn" id="btn-sig"><span class="upload-icon">✍️</span> Subir firma…</div>
-      </div>
-    </div>
-
-  </div><!-- /editor-grid -->
-
-  <div class="btn-row">
-    <button class="btn btn-primary" onclick="window.print()">🖨 Imprimir / Guardar PDF</button>
-    <button class="btn btn-outline" onclick="resetAll()">↺ Restablecer</button>
-    <button class="btn btn-green" onclick="generateLink()">🔗 Guardar y generar enlace</button>
+  <!-- BG Geometric Isométrico SVG -->
+  <div class="bg-pattern">
+    <svg xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <pattern id="hex" width="116" height="200" patternUnits="userSpaceOnUse" patternTransform="scale(0.35)">
+          <polygon points="58,0 116,33.5 116,100.5 58,134 0,100.5 0,33.5" fill="none" stroke="rgba(255,255,255,0.035)" stroke-width="0.8"/>
+          <polygon points="58,67 116,100.5 116,167.5 58,201 0,167.5 0,100.5" fill="none" stroke="rgba(255,255,255,0.035)" stroke-width="0.8"/>
+          <line x1="58" y1="0" x2="58" y2="67" stroke="rgba(255,255,255,0.025)" stroke-width="0.6"/>
+          <line x1="116" y1="33.5" x2="58" y2="67" stroke="rgba(255,255,255,0.025)" stroke-width="0.6"/>
+          <line x1="0" y1="33.5" x2="58" y2="67" stroke="rgba(255,255,255,0.025)" stroke-width="0.6"/>
+          <line x1="58" y1="134" x2="58" y2="201" stroke="rgba(255,255,255,0.025)" stroke-width="0.6"/>
+          <line x1="116" y1="167.5" x2="58" y2="201" stroke="rgba(255,255,255,0.025)" stroke-width="0.6"/>
+          <line x1="0" y1="167.5" x2="58" y2="201" stroke="rgba(255,255,255,0.025)" stroke-width="0.6"/>
+          <polygon points="58,67 116,100.5 116,134 58,100.5 0,134 0,100.5" fill="none" stroke="rgba(255,255,255,0.055)" stroke-width="0.8"/>
+          <line x1="58" y1="67" x2="58" y2="100" stroke="rgba(255,255,255,0.04)" stroke-width="0.6"/>
+          <line x1="0" y1="100.5" x2="58" y2="100" stroke="rgba(255,255,255,0.04)" stroke-width="0.6"/>
+          <line x1="116" y1="100.5" x2="58" y2="100" stroke="rgba(255,255,255,0.04)" stroke-width="0.6"/>
+        </pattern>
+      </defs>
+      <rect width="100%" height="100%" fill="var(--bg)"/>
+      <rect width="100%" height="100%" fill="url(#hex)"/>
+    </svg>
   </div>
-</div>
+  <div class="vignette"></div>
 
-<!-- Link result -->
-<div id="link-result" style="display:none;position:relative;z-index:3;width:100%;max-width:860px;background:rgba(34,197,94,0.08);border:1px solid rgba(34,197,94,0.25);border-radius:6px;padding:.9rem 1.1rem;margin-bottom:1.2rem;">
-  <p style="font-size:.62rem;letter-spacing:.14em;text-transform:uppercase;color:rgba(34,197,94,.7);margin-bottom:.5rem;font-weight:600;">✓ Enlace generado</p>
-  <div style="display:flex;gap:.6rem;align-items:center;flex-wrap:wrap;">
-    <input id="link-output" type="text" readonly style="flex:1;min-width:200px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:3px;color:rgba(255,255,255,.7);font-family:'DM Sans',sans-serif;font-size:.75rem;padding:.4rem .7rem;outline:none;"/>
-    <button class="btn btn-primary" onclick="copyGenLink()">Copiar enlace</button>
-    <a id="link-open" href="#" target="_blank" class="btn btn-outline">Abrir vista →</a>
-  </div>
-  <p style="margin-top:.5rem;font-size:.6rem;color:rgba(255,255,255,.2);line-height:1.6;">El enlace contiene todos los datos del certificado. Compártelo directamente o ábrelo para imprimirlo.</p>
-</div>
-
-<!-- ── CERTIFICATE ── -->
-<div class="cert-wrap">
-  <div class="cert" id="certificate">
-
-    <!-- BG inside cert -->
-    <div class="cert-bg-svg">
-      <svg viewBox="0 0 860 608" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
-        <defs>
-          <pattern id="hexcert" x="0" y="0" width="100" height="86" patternUnits="userSpaceOnUse">
-            <polygon points="50,2 98,27 98,62 50,84 2,62 2,27" fill="none" stroke="rgba(13,19,33,0.06)" stroke-width="0.8"/>
-            <line x1="50" y1="2"  x2="50" y2="43" stroke="rgba(13,19,33,0.04)" stroke-width="0.5"/>
-            <line x1="2"  y1="27" x2="50" y2="43" stroke="rgba(13,19,33,0.04)" stroke-width="0.5"/>
-            <line x1="98" y1="27" x2="50" y2="43" stroke="rgba(13,19,33,0.04)" stroke-width="0.5"/>
-          </pattern>
-        </defs>
-        <rect width="100%" height="100%" fill="#f5f4f0"/>
-        <rect width="100%" height="100%" fill="url(#hexcert)"/>
-      </svg>
+  <div class="container">
+    <h1>Creador de Certificados</h1>
+    
+    <div class="form-group">
+      <label for="ed-name">Nombre del Alumno</label>
+      <input type="text" id="ed-name" value="Juan Perez Gomez"/>
     </div>
-    <div class="cert-frame"></div>
 
-    <!-- Header -->
-    <div class="cert-header">
-      <div id="cert-logo-area">
-        <span class="logo-ph">Tu Logo Aquí</span>
+    <div class="form-group">
+      <label for="ed-course">Nombre del Curso / Logro</label>
+      <input type="text" id="ed-course" value="Master Avanzado en Inteligencia Artificial"/>
+    </div>
+
+    <div class="form-group">
+      <label for="ed-subtitle">Subtítulo / Descripción Detallada</label>
+      <textarea id="ed-subtitle">Por haber cumplido satisfactoriamente con todos los módulos académicos, evaluaciones prácticas y proyectos especiales diseñados para la especialización técnica y despliegue de modelos masivos.</textarea>
+    </div>
+
+    <div class="form-row">
+      <div class="form-group">
+        <label for="ed-hours">Horas Académicas</label>
+        <input type="text" id="ed-hours" value="120 horas"/>
+      </div>
+      <div class="form-group">
+        <label for="ed-verify">Código de Verificación / ID</label>
+        <input type="text" id="ed-verify" value="CERT-2026-AI984"/>
       </div>
     </div>
 
-    <!-- Body -->
-    <div class="cert-body">
-      <p class="cert-tag">This certifies that</p>
-      <p class="cert-name"  id="c-name">Kriti Rai</p>
-      <p class="cert-completed">successfully completed the</p>
-      <p class="cert-course" id="c-course">Legacy Responsive Web Design V8</p>
-      <p class="cert-subtitle" id="c-subtitle">Developer Certification on April 10, 2024</p>
-      <p class="cert-hours" id="c-hours">representing approximately 300 hours of work</p>
-      <div id="cert-sig-img-wrap" style="height:clamp(70px,12%,100px);width:clamp(140px,28%,260px);display:flex;align-items:flex-end;justify-content:center;margin-top:.9rem;overflow:hidden;"></div>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="ed-signame">Nombre del Firmante</label>
+        <input type="text" id="ed-signame" value="Dra. Elena Rostova"/>
+      </div>
+      <div class="form-group">
+        <label for="ed-sigrole">Cargo del Firmante</label>
+        <input type="text" id="ed-sigrole" value="Directora de Innovación y Tecnología"/>
+      </div>
     </div>
 
-    <!-- Footer -->
-    <div class="cert-footer">
-
-      <!-- LEFT slot -->
-      <div class="cert-left-img" id="cert-left-slot">
-        <div class="img-ph">QR<br>CODE</div>
-      </div>
-
-      <!-- Signature -->
-      <div class="cert-sig">
-        <div class="cert-sig-line"></div>
-        <p class="cert-sig-name" id="c-signame">Quincy Larson</p>
-        <p class="cert-sig-role" id="c-sigrole">Executive Director, freeCodeCamp.org</p>
-      </div>
-
-      <!-- RIGHT slot -->
-      <div class="cert-right-img" id="cert-right-slot">
-        <div class="img-ph">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#0d1321" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-          </svg>
+    <div class="form-row">
+      <div class="form-group">
+        <label for="ed-logotext">Texto Alternativo del Logo</label>
+        <input type="text" id="ed-logotext" value="NEXUS LABS"/>
+        <div class="checkbox-group">
+          <input type="checkbox" id="ed-logo-invert"/>
+          <label for="ed-logo-invert">Invertir color del logo a oscuro en certificado</label>
         </div>
       </div>
     </div>
 
-    <!-- Verify -->
-    <p class="cert-verify">
-      Verify this certification at:<br>
-      <span id="c-verify-url">https://freecodecamp.org/certification/...</span>
-    </p>
+    <!-- IMÁGENES (Subida Base64) -->
+    <div class="form-row" style="margin-top:0.5rem;">
+      <div class="form-group">
+        <label>Logo de Organización</label>
+        <div class="file-input-wrapper">
+          <div class="file-label" id="lbl-logo">Subir Logo (PNG/SVG)</div>
+          <input type="file" id="file-logo" accept="image/*"/>
+        </div>
+        <div class="file-preview" id="pre-logo"></div>
+      </div>
+      <div class="form-group">
+        <label>Firma Autorizada</label>
+        <div class="file-input-wrapper">
+          <div class="file-label" id="lbl-sig">Subir Firma (Fondo Transparente)</div>
+          <input type="file" id="file-sig" accept="image/*"/>
+        </div>
+        <div class="file-preview" id="pre-sig"></div>
+      </div>
+    </div>
 
+    <div class="form-row">
+      <div class="form-group">
+        <label>Marca de Esquina Izquierda</label>
+        <div class="file-input-wrapper">
+          <div class="file-label" id="lbl-left">Subir Imagen Izq. (Opcional)</div>
+          <input type="file" id="file-left" accept="image/*"/>
+        </div>
+        <div class="file-preview" id="pre-left"></div>
+      </div>
+      <div class="form-group">
+        <label>Marca de Esquina Derecha</label>
+        <div class="file-input-wrapper">
+          <div class="file-label" id="lbl-right">Subir Imagen Der. (Opcional)</div>
+          <input type="file" id="file-right" accept="image/*"/>
+        </div>
+        <div class="file-preview" id="pre-right"></div>
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="generateLink()">Guardar y Generar Enlace</button>
+
+    <div class="result-box" id="link-result">
+      <div class="result-title">¡Certificado Guardado Exitosamente!</div>
+      <div class="input-copy-group">
+        <input type="text" id="link-output" readonly/>
+        <button class="btn-sec" onclick="copyGenLink()">Copiar Enlace</button>
+      </div>
+      <a href="#" class="btn-action-view" id="link-open" target="_blank">Ir a la Vista del Certificado</a>
+    </div>
   </div>
-</div>
 
-<script>
-// ── helpers ──────────────────────────────────────────────
-function $(id){ return document.getElementById(id); }
+  <script>
+    const $ = id => document.getElementById(id);
+    const _imgs = { logo: '', sig: '', left: '', right: '' };
 
-function readFileAsDataURL(file){
-  return new Promise((resolve, reject) => {
-    const r = new FileReader();
-    r.onload = e => resolve(e.target.result);
-    r.onerror = reject;
-    r.readAsDataURL(file);
-  });
-}
+    function bindFile(inputId, storageKey, labelId, previewId) {
+      $(inputId).addEventListener('change', function(e) {
+        const file = e.target.files[0];
+        if(!file) return;
+        $(labelId).textContent = '✓ Archivo Cargado';
+        $(labelId).style.borderColor = 'rgba(255,255,255,0.4)';
+        
+        const reader = new FileReader();
+        reader.onload = function(evt) {
+          _imgs[storageKey] = evt.target.result;
+          $(previewId).innerHTML = `<img src="${evt.target.result}" alt="Preview"/> <span>${file.name}</span>`;
+        };
+        reader.readAsDataURL(file);
+      });
+    }
 
-// ── text fields live update ───────────────────────────────
-const textMap = {
-  'ed-name':     'c-name',
-  'ed-course':   'c-course',
-  'ed-subtitle': 'c-subtitle',
-  'ed-hours':    'c-hours',
-  'ed-signame':  'c-signame',
-  'ed-sigrole':  'c-sigrole',
-};
+    bindFile('file-logo', 'logo', 'lbl-logo', 'pre-logo');
+    bindFile('file-sig', 'sig', 'lbl-sig', 'pre-sig');
+    bindFile('file-left', 'left', 'lbl-left', 'pre-left');
+    bindFile('file-right', 'right', 'lbl-right', 'pre-right');
 
-Object.keys(textMap).forEach(srcId => {
-  $(srcId).addEventListener('input', () => {
-    $(textMap[srcId]).textContent = $(srcId).value;
-  });
-});
+    function generateLink(){
+      const data = {
+        name:       $('ed-name').value,
+        course:     $('ed-course').value,
+        subtitle:   $('ed-subtitle').value,
+        hours:      $('ed-hours').value,
+        signame:    $('ed-signame').value,
+        sigrole:    $('ed-sigrole').value,
+        verify:     $('ed-verify').value,
+        logoText:   $('ed-logotext').value,
+        logoInvert: $('ed-logo-invert').checked,
+        logo:       _imgs.logo,
+        sig:        _imgs.sig,
+        left:       _imgs.left,
+        right:      _imgs.right,
+      };
 
-$('ed-verify').addEventListener('input', () => {
-  $('c-verify-url').textContent = $('ed-verify').value;
-});
+      // Guardamos el payload en localStorage para evitar URLs masivas que rompen Vercel
+      try {
+        localStorage.setItem('cert_payload', JSON.stringify(data));
+      } catch(e) {
+        alert("Las imágenes cargadas superan el espacio disponible del navegador. Intenta optimizarlas.");
+        return;
+      }
 
-// ── logo: text fallback ───────────────────────────────────
-$('ed-logotext').addEventListener('input', updateLogoText);
+      // RESOLUCIÓN DEL 404: Lógica de enrutamiento robusta compatible con entornos locales y Vercel Production
+      const origin = window.location.origin;
+      const path = window.location.pathname;
+      
+      // Extrae el directorio base de forma segura sin importar si termina en / o en archivo
+      const baseDir = path.substring(0, path.lastIndexOf('/')) + '/';
+      const url = origin + baseDir + 'view.html';
 
-function updateLogoText(){
-  // only update if no image is loaded
-  if($('cert-logo-area').querySelector('img')) return;
-  const t = $('ed-logotext').value.trim();
-  $('cert-logo-area').innerHTML = t
-    ? `<span class="logo-text">${t}</span>`
-    : `<span class="logo-ph">Tu Logo Aquí</span>`;
-}
+      const box = $('link-result');
+      const input = $('link-output');
+      const openBtn = $('link-open');
+      
+      input.value = url;
+      openBtn.href = url;
+      box.style.display = 'block';
+      input.select();
+      box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    }
 
-// ── file upload: shared handler ───────────────────────────
-async function handleUpload(fileInput, labelEl, onLoad){
-  const file = fileInput.files[0];
-  if(!file) return;
-  try {
-    const dataURL = await readFileAsDataURL(file);
-    labelEl.textContent = '✓ ' + file.name;
-    labelEl.classList.add('has-file');
-    onLoad(dataURL);
-  } catch(e) {
-    console.error('Error leyendo archivo:', e);
-  }
-}
-
-// Logo handler moved to generateLink section below
-
-$('ed-logo-invert').addEventListener('change', function(){
-  const img = $('cert-logo-area').querySelector('img');
-  if(img) img.style.filter = this.checked ? 'brightness(0) invert(1)' : 'none';
-});
-
-function applyLogo(src){
-  const invert = $('ed-logo-invert').checked;
-  // width:100% height:100% son críticos para SVGs sin dimensiones declaradas
-  $('cert-logo-area').innerHTML =
-    `<img src="${src}" alt="Logo" style="display:block;width:100%;height:100%;max-width:280px;max-height:60px;object-fit:contain;object-position:center;filter:${invert ? 'brightness(0) invert(1)' : 'none'};"/>`;
-}
-
-// Left image handler moved to generateLink section below
-
-// Right image handler moved to generateLink section below
-
-// Signature handler moved to generateLink section below
-
-// ── reset ─────────────────────────────────────────────────
-function resetAll(){
-  // text fields
-  $('ed-name').value     = 'Kriti Rai';
-  $('ed-course').value   = 'Legacy Responsive Web Design V8';
-  $('ed-subtitle').value = 'Developer Certification on April 10, 2024';
-  $('ed-hours').value    = 'representing approximately 300 hours of work';
-  $('ed-signame').value  = 'Quincy Larson';
-  $('ed-sigrole').value  = 'Executive Director, freeCodeCamp.org';
-  $('ed-verify').value   = 'https://freecodecamp.org/certification/...';
-  $('ed-logotext').value = 'freeCodeCamp(🔥)';
-
-  // sync text to cert
-  Object.entries(textMap).forEach(([s,d]) => $(d).textContent = $(s).value);
-  $('c-verify-url').textContent = $('ed-verify').value;
-
-  // reset logo
-  $('cert-logo-area').innerHTML = `<span class="logo-text">freeCodeCamp(🔥)</span>`;
-  $('ed-logo-invert').checked = false;
-
-  // reset images
-  $('cert-left-slot').innerHTML = `<div class="img-ph">QR<br>CODE</div>`;
-  $('cert-right-slot').innerHTML = `
-    <div class="img-ph">
-      <svg viewBox="0 0 24 24" fill="none" stroke="#0d1321" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-        <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-      </svg>
-    </div>`;
-
-  // reset file inputs
-  ['file-logo','file-left','file-right','file-sig'].forEach(id => $(id).value = '');
-  ['btn-logo','btn-left','btn-right','btn-sig'].forEach((id,i) => {
-    const el = $(id);
-    el.classList.remove('has-file');
-    const icons  = ['🖼','📷','🏅','✍️'];
-    const texts  = ['Subir logo…','Subir imagen…','Subir imagen…','Subir firma…'];
-    el.innerHTML = `<span class="upload-icon">${icons[i]}</span> ${texts[i]}`;
-  });
-  // reset signature image
-  $('cert-sig-img-wrap').innerHTML = '';
-}
-
-// ── generate shareable link ──────────────────────────────
-// Store base64 images for link generation
-const _imgs = { logo: null, sig: null, left: null, right: null };
-
-// Patch handleUpload to also store data
-const _origHandleUpload = handleUpload;
-async function handleUploadWithStore(fileInput, labelEl, key, onLoad){
-  const file = fileInput.files[0];
-  if(!file) return;
-  try {
-    const dataURL = await readFileAsDataURL(file);
-    _imgs[key] = dataURL;
-    labelEl.textContent = '✓ ' + file.name;
-    labelEl.classList.add('has-file');
-    onLoad(dataURL);
-  } catch(e){ console.error(e); }
-}
-
-// Re-wire file inputs to use storing version
-$('file-logo').addEventListener('change', function(){
-  handleUploadWithStore(this, $('btn-logo'), 'logo', applyLogo);
-});
-$('file-sig').addEventListener('change', function(){
-  handleUploadWithStore(this, $('btn-sig'), 'sig', (src) => {
-    $('cert-sig-img-wrap').innerHTML =
-      `<img src="${src}" alt="Firma" style="max-height:100%;max-width:clamp(132px,26%,240px);object-fit:contain;mix-blend-mode:multiply;"/>`;
-  });
-});
-$('file-left').addEventListener('change', function(){
-  handleUploadWithStore(this, $('btn-left'), 'left', (src) => {
-    $('cert-left-slot').innerHTML = `<img src="${src}" alt="Imagen izquierda"/>`;
-  });
-});
-$('file-right').addEventListener('change', function(){
-  handleUploadWithStore(this, $('btn-right'), 'right', (src) => {
-    $('cert-right-slot').innerHTML = `<img src="${src}" alt="Imagen derecha"/>`;
-  });
-});
-
-function generateLink(){
-  const data = {
-    name:       $('ed-name').value,
-    course:     $('ed-course').value,
-    subtitle:   $('ed-subtitle').value,
-    hours:      $('ed-hours').value,
-    signame:    $('ed-signame').value,
-    sigrole:    $('ed-sigrole').value,
-    verify:     $('ed-verify').value,
-    logoText:   $('ed-logotext').value,
-    logoInvert: $('ed-logo-invert').checked,
-    logo:       _imgs.logo,
-    sig:        _imgs.sig,
-    left:       _imgs.left,
-    right:      _imgs.right,
-  };
-  const encoded = btoa(encodeURIComponent(JSON.stringify(data)));
-  const url = location.href.replace(/certificate\.html.*$/, '') + 'view.html#' + encoded;
-  const box = $('link-result');
-  const input = $('link-output');
-  const openBtn = $('link-open');
-  input.value = url;
-  openBtn.href = url;
-  box.style.display = 'block';
-  input.select();
-  box.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-}
-
-function copyGenLink(){
-  const input = $('link-output');
-  input.select();
-  navigator.clipboard.writeText(input.value).catch(()=>{});
-  const btn = input.nextElementSibling;
-  btn.textContent = '✓ Copiado';
-  setTimeout(()=> btn.textContent = 'Copiar enlace', 2000);
-}
-
-// ── init: sync text on load ───────────────────────────────
-Object.entries(textMap).forEach(([s,d]) => $(d).textContent = $(s).value);
-$('c-verify-url').textContent = $('ed-verify').value;
-updateLogoText();
-</script>
+    function copyGenLink(){
+      const input = $('link-output');
+      input.select();
+      navigator.clipboard.writeText(input.value).catch(()=>{});
+      const btn = input.nextElementSibling;
+      btn.textContent = '✓ Copiado';
+      setTimeout(()=> btn.textContent = 'Copiar Enlace', 2000);
+    }
+  </script>
 </body>
 </html>
