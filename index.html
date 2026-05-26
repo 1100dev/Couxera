@@ -3,6 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="robots" content="noindex, nofollow, noarchive"/>
+  
   <title>En Mantenimiento</title>
   <link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet"/>
   <style>
@@ -72,9 +74,7 @@
       text-transform: uppercase;
       font-family: 'DM Sans', sans-serif;
       font-weight: 300;
-      /* Replace this div with your <img> tag */
     }
-    /* If you add an <img> inside .logo-area, it shows instead */
     .logo-area img {
       max-height: 70px;
       max-width: 260px;
@@ -159,20 +159,15 @@
 </head>
 <body>
 
-  <!-- Geometric background -->
   <div class="bg-pattern">
     <svg viewBox="0 0 600 600" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
       <defs>
         <pattern id="hex" x="0" y="0" width="120" height="104" patternUnits="userSpaceOnUse">
-          <!-- isometric cube grid -->
-          <!-- top face -->
           <polygon points="60,2 118,32 118,72 60,102 2,72 2,32"
             fill="none" stroke="rgba(255,255,255,0.055)" stroke-width="0.8"/>
-          <!-- inner lines -->
           <line x1="60" y1="2"  x2="60" y2="52"  stroke="rgba(255,255,255,0.04)" stroke-width="0.6"/>
           <line x1="2"  y1="32" x2="60" y2="52"  stroke="rgba(255,255,255,0.04)" stroke-width="0.6"/>
           <line x1="118" y1="32" x2="60" y2="52" stroke="rgba(255,255,255,0.04)" stroke-width="0.6"/>
-          <!-- offset row -->
           <polygon points="60,54 118,84 118,124 60,154 2,124 2,84"
             fill="none" stroke="rgba(255,255,255,0.055)" stroke-width="0.8"/>
           <line x1="60" y1="54"  x2="60" y2="104" stroke="rgba(255,255,255,0.04)" stroke-width="0.6"/>
@@ -189,12 +184,10 @@
 
   <main class="page">
 
-    <!-- LOGO AREA: replace .logo-placeholder with your <img> -->
     <div class="logo-area">
       <img src="/images/logo.svg" alt="Logo" />
     </div>
 
-    <!-- CENTER -->
     <div class="center">
       <div class="tag">Sistema temporalmente fuera de línea</div>
       <h1>En Mantenimiento</h1>
@@ -205,7 +198,6 @@
       </p>
     </div>
 
-    <!-- FOOTER -->
     <footer class="footer">
       &copy; <span id="yr"></span> &mdash; Todos los derechos reservados
     </footer>
