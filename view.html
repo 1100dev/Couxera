@@ -100,7 +100,7 @@
     }
     .link-notice.visible { display: block; }
 
-    /* Cert wrap */
+    /* Cert wrap responsivo */
     .cert-wrap { position: relative; z-index: 3; width: 100%; max-width: 860px; }
 
     .cert {
@@ -109,110 +109,115 @@
       aspect-ratio: 1.414;
       position: relative;
       overflow: hidden;
-      border-radius: 2px;
+      border-radius: 4px;
       box-shadow: 0 32px 80px rgba(0,0,0,0.6);
       display: flex; flex-direction: column;
     }
     .cert-bg-svg { position: absolute; inset: 0; z-index: 0; }
     .cert-bg-svg svg { width:100%; height:100%; }
+    
     .cert-frame {
-      position: absolute; inset: 10px; z-index: 1;
-      border: 1.5px solid rgba(13,19,33,0.15);
+      position: absolute; inset: 12px; z-index: 1;
+      border: 1.5px solid rgba(13,19,33,0.12);
       pointer-events: none;
     }
     .cert-frame::before {
       content:''; position: absolute; inset: 5px;
-      border: .5px solid rgba(13,19,33,0.08);
+      border: .5px solid rgba(13,19,33,0.06);
     }
 
-    /* header */
+    /* header - Logo a la Derecha superior (Estilo Coursera) */
     .cert-header {
       position: relative; z-index: 2;
-      background: var(--dark);
-      padding: 1% 4%;
-      display: flex; align-items: center; justify-content: center;
-      min-height: 13%;
+      padding: 3% 4% 0;
+      display: flex; align-items: center; justify-content: flex-end;
+      min-height: 10%;
     }
     #cert-logo-area {
-      display: flex; align-items: center; justify-content: center;
-      width: 280px; height: 60px; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: flex-end;
+      width: clamp(120px, 22vw, 180px); height: clamp(35px, 6vw, 50px);
     }
     #cert-logo-area img {
       display: block; width: 100%; height: 100%;
-      max-width: 280px; max-height: 60px;
-      object-fit: contain; object-position: center;
+      object-fit: contain; object-position: right center;
     }
     .logo-text {
-      color: #fff; font-family: 'Bebas Neue', sans-serif;
-      font-size: clamp(1.1rem, 3.5vw, 2rem); letter-spacing: .06em;
-    }
-    .logo-ph {
-      font-family: 'DM Sans', sans-serif; font-weight: 300;
-      font-size: clamp(.55rem, 1.3vw, .75rem);
-      letter-spacing: .2em; text-transform: uppercase;
-      color: rgba(255,255,255,0.25);
-      border: 1px dashed rgba(255,255,255,0.12); padding: .4rem 1.1rem;
+      color: var(--dark); font-family: 'Bebas Neue', sans-serif;
+      font-size: clamp(1.1rem, 3vw, 1.8rem); letter-spacing: .06em;
     }
 
-    /* body */
+    /* body principal */
     .cert-body {
       position: relative; z-index: 2; flex: 1;
       display: flex; flex-direction: column;
-      align-items: center; justify-content: center;
-      padding: 1.5% 8% 0; gap: .4%; text-align: center;
+      align-items: center; justify-content: flex-start;
+      padding: 0 6% 3%;
+      text-align: center;
     }
-    .cert-tag { font-size: clamp(.52rem,1.1vw,.72rem); letter-spacing:.2em; text-transform:uppercase; color:var(--muted); }
-    .cert-name { font-family:'DM Serif Display',serif; font-size:clamp(1.5rem,5vw,3.4rem); color:var(--dark); line-height:1.1; }
-    .cert-completed { font-size:clamp(.58rem,1.3vw,.82rem); color:var(--muted); }
-    .cert-course { font-family:'DM Serif Display',serif; font-size:clamp(.95rem,2.8vw,2rem); color:var(--dark); font-weight:700; line-height:1.2; }
-    .cert-subtitle { font-size:clamp(.58rem,1.2vw,.78rem); color:var(--muted); }
-    .cert-hours { font-size:clamp(.52rem,1vw,.68rem); color:rgba(90,90,106,.6); }
-    #cert-sig-img-wrap {
-      height: clamp(70px,12%,100px);
-      width: clamp(140px,28%,260px);
-      display: flex; align-items: flex-end; justify-content: center;
-      margin-top: .9rem; overflow: hidden;
+    
+    .cert-name { font-family:'DM Serif Display', serif; font-size: clamp(1.8rem, 4.8vw, 3.5rem); color: var(--dark); line-height: 1.1; margin-bottom: 0.5%; }
+    .cert-completed { font-size: clamp(.6rem, 1.3vw, .85rem); color: var(--muted); font-weight: 400; margin-bottom: 0.5%; }
+    .cert-course { font-family:'DM Serif Display', serif; font-size: clamp(1.2rem, 3.2vw, 2.3rem); color: var(--dark); font-weight: 700; line-height: 1.2; margin-bottom: 1.5%; }
+    .cert-subtitle { font-size: clamp(.55rem, 1.15vw, .75rem); color: var(--muted); max-width: 90%; line-height: 1.5; margin-bottom: 2%; }
+    
+    /* Bloque de Metadatos (Duración e ID de Certificación) */
+    .cert-meta-block {
+      margin-bottom: 3.5%;
+      font-size: clamp(.52rem, 1.1vw, .72rem);
+      line-height: 1.6;
+      color: var(--dark);
     }
-    #cert-sig-img-wrap img { max-height:100%; max-width:100%; object-fit:contain; mix-blend-mode:multiply; }
+    .meta-label { color: var(--muted); }
 
-    /* footer */
+    /* ── DISEÑO NUEVO: BLOQUE DE FIRMA DIGITALIZADA CENTRAL SUPERIOR ── */
+    .cert-signature-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      width: 100%;
+      max-width: 320px;
+      margin-top: 0.5%;
+    }
+    
+    #cert-sig-img-wrap {
+      height: clamp(55px, 9vw, 75px);
+      width: 100%;
+      display: flex; align-items: center; justify-content: center;
+      overflow: hidden;
+      margin-bottom: 0.4rem;
+    }
+    #cert-sig-img-wrap img { max-height: 100%; max-width: 100%; object-fit: contain; mix-blend-mode: multiply; }
+    
+    .cert-sig-line { width: 100%; height: 1px; background: rgba(13,19,33,0.25); margin-bottom: 0.5rem; }
+    .cert-sig-name { font-family: 'DM Serif Display', serif; font-size: clamp(1rem, 2.2vw, 1.5rem); color: var(--dark); font-weight: 700; line-height: 1.2; }
+    .cert-sig-role { font-size: clamp(.55rem, 1.2vw, .78rem); color: var(--muted); margin-top: 0.1rem; font-weight: 400; }
+
+    /* footer limpio e institucional */
     .cert-footer {
       position: relative; z-index: 2;
-      display: flex; align-items: flex-end; justify-content: space-between;
-      padding: 3% 5% 2.5%; gap: 1%;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 0 5% 4%;
     }
-    .cert-left-img {
-      width: clamp(52px,9.5%,82px); aspect-ratio:1; flex-shrink:0;
-      display:flex; align-items:center; justify-content:center; overflow:hidden;
+    
+    /* Slots decorativos reducidos al footer */
+    .cert-left-img, .cert-right-img {
+      width: clamp(40px, 7vw, 60px); aspect-ratio: 1; flex-shrink: 0;
+      display: flex; align-items: center; justify-content: center; overflow: hidden;
+      opacity: 0.8;
     }
-    .cert-left-img img { width:100%; height:100%; object-fit:contain; display:block; }
-    .cert-left-img .img-ph {
-      width:100%; height:100%; background:var(--dark);
-      display:flex; align-items:center; justify-content:center;
-      font-size:clamp(.3rem,.7vw,.45rem); color:rgba(255,255,255,.25);
-      letter-spacing:.06em; text-transform:uppercase; text-align:center; line-height:1.5;
+    .cert-left-img img, .cert-right-img img { width: 100%; height: 100%; object-fit: contain; display: block; }
+    
+    /* Insignia de Estrella (Footer Derecho por defecto) */
+    .badge-star-ui {
+      width: 100%; height: 100%; border-radius: 50%; border: 1.5px solid var(--dark);
+      display: flex; align-items: center; justify-content: center; position: relative;
     }
-    .cert-sig { text-align:center; flex:1; min-width:0; }
-    .cert-sig-line { width:clamp(70px,18%,150px); height:1px; background:var(--dark); margin:0 auto .3rem; }
-    .cert-sig-name { font-weight:600; font-size:clamp(.52rem,1.2vw,.76rem); color:var(--dark); }
-    .cert-sig-role { font-size:clamp(.44rem,.95vw,.62rem); color:var(--muted); }
-    .cert-right-img {
-      width:clamp(52px,9.5%,82px); aspect-ratio:1; flex-shrink:0;
-      display:flex; align-items:center; justify-content:center; overflow:hidden;
-    }
-    .cert-right-img img { width:100%; height:100%; object-fit:contain; display:block; }
-    .cert-right-img .img-ph {
-      width:100%; height:100%; border-radius:50%; border:3px solid var(--dark);
-      display:flex; align-items:center; justify-content:center; position:relative;
-    }
-    .cert-right-img .img-ph::before {
-      content:''; position:absolute; inset:4px; border-radius:50%; border:1px solid var(--dark);
-    }
-    .cert-right-img .img-ph svg { width:38%; }
+    .badge-star-ui svg { width: 42%; fill: none; stroke: var(--dark); stroke-width: 2; }
 
     .cert-verify {
-      position:absolute; bottom:.7%; left:0; right:0; z-index:2;
-      text-align:center; font-size:clamp(.34rem,.75vw,.52rem); color:rgba(90,90,106,.45);
+      text-align: center; font-size: clamp(.38rem, .8vw, .55rem); color: rgba(90,90,106,0.5);
+      letter-spacing: 0.02em; line-height: 1.4;
     }
 
     /* empty state */
@@ -223,15 +228,21 @@
       letter-spacing: .06em; line-height: 2;
     }
 
+    /* Ajustes adaptativos para móviles */
+    @media (max-width: 650px) {
+      .cert { aspect-ratio: unset; min-height: 580px; padding-top: 1rem; }
+      .cert-frame { inset: 8px; }
+      .cert-body { padding: 0 4% 2%; }
+      .cert-signature-container { max-width: 240px; }
+    }
+
     @media print {
       * { -webkit-print-color-adjust:exact !important; print-color-adjust:exact !important; }
       html, body { background:white !important; padding:0 !important; margin:0 !important; }
       .bg-pattern, .vignette, .topbar, .link-box, .link-notice { display:none !important; }
       .cert-wrap { max-width:100% !important; width:100% !important; margin:0 !important; padding:0 !important; }
       .cert { box-shadow:none !important; border-radius:0 !important; width:100% !important; aspect-ratio:1.414 !important; page-break-inside:avoid; }
-      .cert-header { background:#0d1321 !important; }
     }
-    @media (max-width:600px) { .cert { aspect-ratio:unset; min-height:520px; } }
   </style>
 </head>
 <body>
@@ -244,10 +255,6 @@
         <line x1="60" y1="2"  x2="60" y2="52"  stroke="rgba(255,255,255,0.04)" stroke-width="0.6"/>
         <line x1="2"  y1="32" x2="60" y2="52"  stroke="rgba(255,255,255,0.04)" stroke-width="0.6"/>
         <line x1="118" y1="32" x2="60" y2="52" stroke="rgba(255,255,255,0.04)" stroke-width="0.6"/>
-        <polygon points="60,54 118,84 118,124 60,154 2,124 2,84" fill="none" stroke="rgba(255,255,255,0.055)" stroke-width="0.8"/>
-        <line x1="60" y1="54"  x2="60" y2="104" stroke="rgba(255,255,255,0.04)" stroke-width="0.6"/>
-        <line x1="2"  y1="84"  x2="60" y2="104" stroke="rgba(255,255,255,0.04)" stroke-width="0.6"/>
-        <line x1="118" y1="84" x2="60" y2="104" stroke="rgba(255,255,255,0.04)" stroke-width="0.6"/>
       </pattern>
     </defs>
     <rect width="100%" height="100%" fill="#090909"/>
@@ -256,7 +263,6 @@
 </div>
 <div class="vignette"></div>
 
-<!-- Top bar -->
 <div class="topbar">
   <span class="topbar-label">Vista del Certificado</span>
   <div class="btn-group">
@@ -265,7 +271,6 @@
   </div>
 </div>
 
-<!-- Link box -->
 <div class="link-box" id="link-box">
   <input type="text" id="link-input" readonly/>
   <button class="btn btn-primary" onclick="copyLink()">Copiar</button>
@@ -275,17 +280,13 @@
   ℹ️ Los datos del certificado han sido recuperados con éxito.
 </p>
 
-<!-- Certificate -->
 <div class="cert-wrap">
   <div class="cert" id="certificate">
     <div class="cert-bg-svg">
       <svg viewBox="0 0 860 608" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
         <defs>
           <pattern id="hexcert" x="0" y="0" width="100" height="86" patternUnits="userSpaceOnUse">
-            <polygon points="50,2 98,27 98,62 50,84 2,62 2,27" fill="none" stroke="rgba(13,19,33,0.06)" stroke-width="0.8"/>
-            <line x1="50" y1="2"  x2="50" y2="43" stroke="rgba(13,19,33,0.04)" stroke-width="0.5"/>
-            <line x1="2"  y1="27" x2="50" y2="43" stroke="rgba(13,19,33,0.04)" stroke-width="0.5"/>
-            <line x1="98" y1="27" x2="50" y2="43" stroke="rgba(13,19,33,0.04)" stroke-width="0.5"/>
+            <polygon points="50,2 98,27 98,62 50,84 2,62 2,27" fill="none" stroke="rgba(13,19,33,0.04)" stroke-width="0.8"/>
           </pattern>
         </defs>
         <rect width="100%" height="100%" fill="#f5f4f0"/>
@@ -295,140 +296,15 @@
     <div class="cert-frame"></div>
 
     <div class="cert-header">
-      <div id="cert-logo-area"><span class="logo-ph">Sin logo</span></div>
+      <div id="cert-logo-area"></div>
     </div>
 
     <div class="cert-body">
-      <p class="cert-tag">This certifies that</p>
       <p class="cert-name" id="c-name"></p>
       <p class="cert-completed">successfully completed the</p>
       <p class="cert-course" id="c-course"></p>
       <p class="cert-subtitle" id="c-subtitle"></p>
-      <p class="cert-hours" id="c-hours"></p>
-      <div id="cert-sig-img-wrap"></div>
-    </div>
-
-    
-    <div class="cert-footer">
-      <div class="cert-left-img" id="cert-left-slot">
-        <div class="img-ph">QR<br>CODE</div>
-      </div>
-      <div class="cert-sig">
-        <div class="cert-sig-line"></div>
-        <p class="cert-sig-name" id="c-signame"></p>
-        <p class="cert-sig-role" id="c-sigrole"></p>
-      </div>
-      <div class="cert-right-img" id="cert-right-slot">
-        <div class="img-ph">
-          <svg viewBox="0 0 24 24" fill="none" stroke="#0d1321" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-            <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
-          </svg>
-        </div>
-      </div>
-    </div>
-
-    <p class="cert-verify">
-      Verify this certification at:<br>
-      <span id="c-verify-url"></span>
-    </p>
-  </div>
-</div>
-
-<script>
-function $(id){ return document.getElementById(id); }
-
-function loadFromSource(){
-  const hashId = location.hash.slice(1);
-  
-  if (hashId) {
-    const localData = localStorage.getItem('cert_' + hashId);
-    if (localData) {
-      return { data: JSON.parse(localData), isPublicView: true };
-    }
-  }
-  
-  const fallbackData = localStorage.getItem('cert_payload');
-  if (fallbackData) {
-    return { data: JSON.parse(fallbackData), isPublicView: false };
-  }
-  
-  return null;
-}
-
-function renderCert(data){
-  $('c-name').textContent     = data.name     || '';
-  $('c-course').textContent   = data.course   || '';
-  $('c-subtitle').textContent = data.subtitle || '';
-  $('c-hours').textContent    = data.hours    || '';
-  $('c-signame').textContent  = data.signame  || '';
-  $('c-sigrole').textContent  = data.sigrole  || '';
-  $('c-verify-url').textContent = window.location.href;
-  document.title = (data.name || 'Certificado') + ' — Certificado';
-  $('page-title').textContent = document.title;
-
-  // Logo
-  if(data.logo){
-    $('cert-logo-area').innerHTML =
-      `<img src="${data.logo}" alt="Logo" style="display:block;width:100%;height:100%;max-width:280px;max-height:60px;object-fit:contain;filter:${data.logoInvert?'brightness(0) invert(1)':'none'};"/>`;
-  } else if(data.logoText){
-    $('cert-logo-area').innerHTML = `<span class="logo-text">${data.logoText}</span>`;
-  }
-
-  // Signature
-  if(data.sig){
-    $('cert-sig-img-wrap').innerHTML =
-      `<img src="${data.sig}" alt="Firma" style="max-height:100%;max-width:100%;object-fit:contain;mix-blend-mode:multiply;"/>`;
-  }
-
-  // Left slot
-  if(data.left){
-    $('cert-left-slot').innerHTML = `<img src="${data.left}" alt=""/>`;
-  }
-
-  // Right slot
-  if(data.right){
-    $('cert-right-slot').innerHTML = `<img src="${data.right}" alt=""/>`;
-  }
-}
-
-function copyLink(){
-  const input = $('link-input');
-  input.select();
-  navigator.clipboard.writeText(input.value).catch(()=>{});
-  const btn = input.nextElementSibling;
-  btn.textContent = '✓ Copiado';
-  setTimeout(()=> btn.textContent = 'Copiar', 2000);
-}
-
-function closeLinkBox(){
-  $('link-box').classList.remove('visible');
-  $('link-notice').classList.remove('visible');
-}
-
-// Inicialización de la Vista Inteligente
-const result = loadFromSource();
-if(result){
-  renderCert(result.data);
-  
-  if (result.isPublicView) {
-    // Si la URL contiene el hash del ID del certificado, destruimos visualmente los componentes administrativos
-    const topBar = document.querySelector('.topbar');
-    if(topBar) topBar.style.display = 'none';
-    $('link-box').classList.remove('visible');
-    $('link-notice').classList.remove('visible');
-  } else {
-    // Modo creador
-    $('link-input').value = location.href;
-    $('link-box').classList.add('visible');
-    $('link-notice').classList.add('visible');
-  }
-} else {
-  document.querySelector('.cert-wrap').innerHTML =
-    `<div class="empty-state">
-      No hay datos de certificado válidos.<br>
-      <a href="certificate.html" style="color:rgba(255,255,255,0.4);text-decoration:underline;">Ir al editor →</a>
-    </div>`;
-}
-</script>
-</body>
-</html>
+      
+      <div class="cert-meta-block">
+        <div><span class="meta-label">Duration:</span> <span id="c-hours"></span></div>
+        <div><span class="meta-label">Certification ID:</span> <span id="c-verify-id"></span></div>
