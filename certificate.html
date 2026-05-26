@@ -23,11 +23,12 @@
     .btn-submit { background: #fff; color: #000; font-weight: 600; text-transform: uppercase; font-size: .85rem; letter-spacing: .1em; padding: .8rem; border: none; border-radius: 4px; margin-top: 1.5rem; cursor: pointer; width: 100%; transition: opacity .2s; }
     .btn-submit:hover { opacity: .9; }
     
-    .result-box { background: rgba(255,255,255,0.03); border: 1px dashed rgba(255,255,255,0.15); padding: 1.2rem; border-radius: 6px; margin-top: 1.5rem; display: none; }
+    .result-box { background: rgba(255,255,255,0.03); border: 1px solid rgba(255,255,255,0.12); padding: 1.2rem; border-radius: 6px; margin-top: 1.5rem; display: none; }
     .result-title { font-size: .85rem; font-weight: 600; text-transform: uppercase; color: #fff; margin-bottom: .6rem; }
-    .result-actions { display: flex; gap: .5rem; margin-top: .6rem; }
-    .btn-small { padding: .4rem .8rem; font-size: .75rem; border-radius: 3px; cursor: pointer; text-decoration: none; font-weight: 500; }
-    .btn-small.primary { background: #fff; color: #000; border: none; }
+    .result-actions { display: flex; gap: .5rem; margin-top: .8rem; flex-wrap: wrap; }
+    .btn-small { padding: .55rem 1rem; font-size: .75rem; border-radius: 4px; cursor: pointer; text-decoration: none; font-weight: 600; text-transform: uppercase; letter-spacing: 0.05em; display: inline-flex; align-items: center; gap: 0.3rem; border: none; }
+    .btn-small.primary { background: #fff; color: #000; }
+    .btn-small.accent { background: #2563eb; color: #fff; }
     .btn-small.outline { background: transparent; color: #fff; border: 1px solid rgba(255,255,255,0.2); }
     
     .prefix-info { font-size: 0.7rem; color: rgba(255,255,255,0.3); margin-top: -0.2rem; }
@@ -59,7 +60,7 @@
       <input type="text" id="ed-hours" placeholder="Ej. 120 horas"/>
     </div>
     <div class="form-group">
-      <label>ID de Certificación (Slug URL de Respaldo)</label>
+      <label>ID de Certificación (Slug URL)</label>
       <input type="text" id="ed-verify" placeholder="Ej. CERT-PREVIEW"/>
     </div>
   </div>
@@ -113,11 +114,12 @@
   <button class="btn-submit" onclick="generateLink()">Generar Certificado</button>
 
   <div class="result-box" id="link-result">
-    <div class="result-title">🔗 ¡Enlace generado con éxito!</div>
+    <div class="result-title">🔗 ¡Acciones del Certificado!</div>
     <input type="text" id="link-output" style="width:100%;" readonly/>
     <div class="result-actions">
-      <button class="btn-small primary" onclick="copyGenLink()">Copiar Enlace</button>
-      <a class="btn-small outline" id="link-open" target="_blank">Abrir Vista →</a>
+      <button class="btn-small primary" onclick="copyGenLink()">Copiar Enlace Público</button>
+      <button class="btn-small accent" onclick="printPDF()">🖨 Guardar / PDF</button>
+      <a class="btn-small outline" id="link-open" target="_blank">Ver Online →</a>
     </div>
   </div>
 </div>
@@ -131,6 +133,8 @@ function buildImagePath(val) {
   if (cleanVal.startsWith('images/')) return cleanVal;
   return 'images/' + cleanVal;
 }
+
+let currentGeneratedUrl = '';
 
 function generateLink(){
   const verifyId = $('ed-verify').value.trim() || 'CERT-PREVIEW';
@@ -151,11 +155,9 @@ function generateLink(){
     right:      buildImagePath($('img-right').value),
   };
 
-  // Guardado de respaldo en LocalStorage
   localStorage.setItem('cert_' + verifyId, JSON.stringify(data));
   localStorage.setItem('cert_payload', JSON.stringify(data));
 
-  // NUEVA LÓGICA: Codificamos todo el JSON de forma segura en Base64 para adjuntarlo a la URL
   const jsonStr = JSON.stringify(data);
   const encodedData = btoa(unescape(encodeURIComponent(jsonStr)));
 
@@ -163,11 +165,10 @@ function generateLink(){
   let path = window.location.pathname.substring(0, window.location.pathname.lastIndexOf('/'));
   if(!path.endsWith('/')) path += '/';
   
-  // La URL final contiene absolutamente todos los parámetros estructurados
-  const url = origin + path + 'view.html#' + encodedData;
+  currentGeneratedUrl = origin + path + 'view.html#' + encodedData;
   
-  $('link-output').value = url;
-  $('link-open').href = url;
+  $('link-output').value = currentGeneratedUrl;
+  $('link-open').href = currentGeneratedUrl;
   $('link-result').style.display = 'block';
   $('link-output').select();
   $('link-result').scrollIntoView({ behavior: 'smooth', block: 'nearest' });
@@ -177,9 +178,21 @@ function copyGenLink(){
   const input = $('link-output');
   input.select();
   navigator.clipboard.writeText(input.value).catch(()=>{});
-  const btn = input.nextElementSibling;
+  const btn = event.target;
   btn.textContent = '✓ Copiado';
-  setTimeout(()=> btn.textContent = 'Copiar Enlace', 2000);
+  setTimeout(()=> btn.textContent = 'Copiar Enlace Público', 2000);
+}
+
+// Lógica de impresión: Abre el certificado limpio en otra pestaña y ejecuta el driver nativo de PDF
+function printPDF() {
+  if(!currentGeneratedUrl) return;
+  const printWindow = window.open(currentGeneratedUrl, '_blank');
+  printWindow.addEventListener('load', function() {
+    // Un leve retraso para dar tiempo a que cargue la tipografía externa y renderice imágenes
+    setTimeout(() => {
+      printWindow.print();
+    }, 500);
+  }, true);
 }
 </script>
 </body>
